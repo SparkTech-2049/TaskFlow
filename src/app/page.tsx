@@ -1,16 +1,9 @@
-'use client';
+import { redirect } from 'next/navigation';
+import { headers } from 'next/headers';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-
-export default function HomePage() {
-  const router = useRouter();
-
-  useEffect(() => {
-    const ua = navigator.userAgent;
-    const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
-    router.replace(isMobile ? '/m' : '/d');
-  }, [router]);
-
-  return null;
+export default async function HomePage() {
+  const headersList = await headers();
+  const ua = headersList.get('user-agent') || '';
+  const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
+  redirect(isMobile ? '/m' : '/d');
 }

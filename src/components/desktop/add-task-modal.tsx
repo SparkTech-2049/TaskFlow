@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Calendar, Clock, Bell, Repeat, Infinity, Trash2 } from 'lucide-react';
+import { X, Calendar, Clock, Bell, Repeat, Infinity } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { PRIORITIES } from '@/lib/constants';
 import { useCategories } from '@/lib/hooks/use-categories';

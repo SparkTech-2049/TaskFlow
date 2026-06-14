@@ -4,34 +4,8 @@ import { useState, useMemo } from 'react';
 import { RotateCcw } from 'lucide-react';
 import { useTaskStore } from '@/lib/stores/task-store';
 import { cn } from '@/lib/utils/cn';
+import { CAT_ORDER, CAT_NAMES, CAT_COLORS, SUB_CAT_ORDER, SUB_CAT_NAMES, PRIORITY_COLORS, getCatPath } from '@/components/shared/constants';
 
-const CAT_ORDER = ['project', 'other', 'credit', 'study'] as const;
-const CAT_NAMES: Record<string, string> = {
-  project: '工作',
-  other: '琐事',
-  credit: '理财',
-  study: '学习',
-};
-const CAT_COLORS: Record<string, string> = {
-  project: '#2B8CED',
-  other: '#8B6FC0',
-  credit: '#E5534D',
-  study: '#7C4DFF',
-};
-const SUB_CAT_ORDER = ['project-setup', 'study-improve', 'long-term', 'register-download', 'quick-task'] as const;
-const SUB_CAT_NAMES: Record<string, string> = {
-  'project-setup': '项目搭建',
-  'study-improve': '学习提升',
-  'long-term': '长期维护',
-  'register-download': '注册下载',
-  'quick-task': '随手办',
-};
-const PRIORITY_COLORS: Record<string, string> = {
-  urgent_important: '#E53E3E',
-  important: '#ED8936',
-  urgent: '#3B6EF6',
-  normal: '#2DB87A',
-};
 const CAT_TABS = ['全部', '工作', '琐事', '理财', '学习'] as const;
 const CAT_TAB_MAP: Record<string, string> = {
   '全部': '',
@@ -104,7 +78,6 @@ export default function MobileArchivePage() {
                   ? 'bg-accent-blue text-white'
                   : 'bg-bg-elevated text-text-secondary'
               )}
-              style={{ padding: '4px 12px' }}
             >
               {tab}
             </button>
@@ -187,7 +160,7 @@ function ArchivedTaskRow({
   onActivate: (id: number) => void;
 }) {
   const priorityColor = PRIORITY_COLORS[task.priorityLevel] || PRIORITY_COLORS.normal;
-  const catPath = task.subCat ? `${CAT_NAMES[task.cat] || task.cat} > ${SUB_CAT_NAMES[task.subCat] || task.subCat}` : (CAT_NAMES[task.cat] || task.cat);
+  const catPath = getCatPath(task.cat, task.subCat);
 
   return (
     <div className="flex items-center gap-2 rounded-xl bg-bg-elevated px-2 py-2.5">

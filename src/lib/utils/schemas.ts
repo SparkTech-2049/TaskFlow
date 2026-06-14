@@ -1,23 +1,5 @@
 import { z } from 'zod';
 
-export const passwordSchema = z
-  .string()
-  .min(8, '密码至少8位')
-  .regex(/[a-z]/, '必须包含小写字母')
-  .regex(/[A-Z]/, '必须包含大写字母')
-  .regex(/[0-9]/, '必须包含数字')
-  .regex(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/, '必须包含特殊符号');
-
-export const registerSchema = z.object({
-  username: z.string().min(2, '用户名至少2位').max(50),
-  email: z.string().email('邮箱格式不正确').optional().or(z.literal('')),
-  password: passwordSchema,
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: '两次密码不一致',
-  path: ['confirmPassword'],
-});
-
 export const loginSchema = z.object({
   username: z.string().min(1, '请输入用户名'),
   password: z.string().min(1, '请输入密码'),
@@ -38,6 +20,5 @@ export const createTaskSchema = z.object({
   monthly_repeat: z.boolean().optional(),
 });
 
-export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type CreateTaskInput = z.infer<typeof createTaskSchema>;

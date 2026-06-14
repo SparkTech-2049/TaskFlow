@@ -17,7 +17,7 @@ const catItems = [
 ];
 
 const viewItems = [
-  { href: '/d/calendar', label: '日历', icon: Calendar },
+  { href: '/d', label: '日历', icon: Calendar },
   { href: '/d/list', label: '清单', icon: List },
   { href: '/d/quadrant', label: '四象限', icon: Grid2X2 },
 ];

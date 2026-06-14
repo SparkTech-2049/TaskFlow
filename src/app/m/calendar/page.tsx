@@ -7,44 +7,7 @@ import { useTaskStore } from '@/lib/stores/task-store';
 import { useSettingsStore } from '@/lib/stores/settings-store';
 import { AddTaskSheet } from '@/components/mobile/add-task-sheet';
 import { cn } from '@/lib/utils/cn';
-
-const WEEKDAYS = ['一', '二', '三', '四', '五', '六', '日'];
-
-const CAT_NAMES: Record<string, string> = {
-  project: '工作',
-  other: '琐事',
-  credit: '理财',
-  study: '学习',
-};
-
-const CAT_COLORS: Record<string, string> = {
-  project: 'bg-cat-project',
-  other: 'bg-cat-other',
-  credit: 'bg-cat-credit',
-  study: 'bg-cat-study',
-};
-
-const CAT_TEXT_COLORS: Record<string, string> = {
-  project: 'text-cat-project',
-  other: 'text-cat-other',
-  credit: 'text-cat-credit',
-  study: 'text-cat-study',
-};
-
-const SUB_CAT_NAMES: Record<string, string> = {
-  'project-setup': '项目搭建',
-  'study-improve': '学习提升',
-  'long-term': '长期维护',
-  'register-download': '注册下载',
-  'quick-task': '随手办',
-};
-
-const PRIORITY_DOT_COLORS: Record<string, string> = {
-  urgent_important: 'bg-priority-urgent',
-  important: 'bg-priority-important',
-  urgent: 'bg-accent-blue',
-  normal: 'bg-priority-normal',
-};
+import { CAT_NAMES, CAT_BG_CLASSES, CAT_TEXT_CLASSES, SUB_CAT_NAMES, PRIORITY_DOT_CLASSES, WEEKDAYS } from '@/components/shared/constants';
 
 export default function MobileCalendarPage() {
   const {
@@ -229,7 +192,7 @@ export default function MobileCalendarPage() {
                           key={i}
                           className={cn(
                             'h-1 w-1 rounded-full',
-                            PRIORITY_DOT_COLORS[t.priority] || 'bg-priority-normal'
+                            PRIORITY_DOT_CLASSES[t.priority] || 'bg-priority-normal'
                           )}
                         />
                       ))}
@@ -282,8 +245,8 @@ export default function MobileCalendarPage() {
               Object.entries(groupedTasks).map(([cat, catTasks]) => (
                 <div key={cat}>
                   <div className="flex items-center gap-1.5 mb-2">
-                    <span className={cn('h-2 w-2 rounded-full', CAT_COLORS[catTasks[0]?.cat] || 'bg-accent-blue')} />
-                    <span className={cn('text-[10px] font-medium', CAT_TEXT_COLORS[catTasks[0]?.cat] || 'text-accent-blue')}>
+                    <span className={cn('h-2 w-2 rounded-full', CAT_BG_CLASSES[catTasks[0]?.cat] || 'bg-accent-blue')} />
+                    <span className={cn('text-[10px] font-medium', CAT_TEXT_CLASSES[catTasks[0]?.cat] || 'text-accent-blue')}>
                       {CAT_NAMES[catTasks[0]?.cat] || cat}
                       {catTasks[0]?.subCat && catTasks[0]?.cat === 'other' && ` > ${SUB_CAT_NAMES[catTasks[0].subCat] || catTasks[0].subCat}`}
                     </span>
@@ -309,7 +272,7 @@ export default function MobileCalendarPage() {
                         <span
                           className={cn(
                             'h-1.5 w-1.5 rounded-full shrink-0',
-                            PRIORITY_DOT_COLORS[task.priorityLevel] || 'bg-priority-normal'
+                            PRIORITY_DOT_CLASSES[task.priorityLevel] || 'bg-priority-normal'
                           )}
                         />
                         <span

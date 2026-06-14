@@ -1,17 +1,9 @@
 ﻿'use client';
 
 import { useState, useMemo, useCallback } from 'react';
+import type { CalendarDay } from '@/lib/types';
 
-interface CalendarDay {
-  date: Date;
-  day: number;
-  isCurrentMonth: boolean;
-  isToday: boolean;
-  isWeekend: boolean;
-  isSunday: boolean;
-  isSaturday: boolean;
-  dateString: string; // YYYY-MM-DD
-}
+export type { CalendarDay };
 
 interface UseCalendarReturn {
   currentYear: number;

@@ -14,7 +14,6 @@ export const users = pgTable('users', {
   username: varchar('username', { length: 50 }).notNull().unique(),
   email: varchar('email', { length: 255 }).unique(),
   passwordHash: varchar('password_hash', { length: 255 }),
-  githubId: varchar('github_id', { length: 50 }).unique(),
   avatarUrl: varchar('avatar_url', { length: 500 }),
   skin: varchar('skin', { length: 20 }).default('default'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -70,6 +69,13 @@ export const userSettings = pgTable('user_settings', {
   barkWebhook: varchar('bark_webhook', { length: 500 }),
 });
 
+export const bannedIps = pgTable('banned_ips', {
+  id: serial('id').primaryKey(),
+  ip: varchar('ip', { length: 45 }).notNull().unique(),
+  reason: varchar('reason', { length: 200 }).default('密码错误'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
 export const accounts = pgTable('accounts', {
   id: serial('id').primaryKey(),
   userId: integer('user_id')
@@ -85,19 +91,4 @@ export const accounts = pgTable('accounts', {
   scope: text('scope'),
   id_token: text('id_token'),
   session_state: text('session_state'),
-});
-
-export const sessions = pgTable('sessions', {
-  id: serial('id').primaryKey(),
-  sessionToken: varchar('session_token', { length: 255 }).notNull().unique(),
-  userId: integer('user_id')
-    .notNull()
-    .references(() => users.id),
-  expires: timestamp('expires', { mode: 'date' }).notNull(),
-});
-
-export const verificationTokens = pgTable('verification_tokens', {
-  identifier: varchar('identifier', { length: 255 }).notNull(),
-  token: varchar('token', { length: 255 }).notNull().unique(),
-  expires: timestamp('expires', { mode: 'date' }).notNull(),
 });

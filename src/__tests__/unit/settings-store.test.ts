@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { useSettingsStore } from '@/lib/stores/settings-store';
+import { useSettingsStore, applySkin } from '@/lib/stores/settings-store';
 
 describe('SettingsStore (PRD §3.7 设置面板)', () => {
   beforeEach(() => {
@@ -47,9 +47,9 @@ describe('SettingsStore (PRD §3.7 设置面板)', () => {
       expect(useSettingsStore.getState().skin).toBe('huawei');
     });
 
-    it('切换皮肤应设置 data-skin 属性', () => {
+    it('applySkin 应设置 data-skin 属性', () => {
       const spy = vi.spyOn(document.documentElement, 'setAttribute');
-      useSettingsStore.getState().setSkin('neon');
+      applySkin('neon');
       expect(spy).toHaveBeenCalledWith('data-skin', 'neon');
       spy.mockRestore();
     });

@@ -10,11 +10,17 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(isMobile ? '/m' : '/d', request.url));
   }
 
-  // Auth check disabled for local development
-  // TODO: Re-enable for production
-  // const isAuthPage = pathname.endsWith('/login');
-  // const sessionToken = request.cookies.get('authjs.session-token')?.value || request.cookies.get('__Secure-authjs.session-token')?.value;
-  // if (!isAuthPage && !sessionToken) { ... }
+  const isAuthPage = pathname.endsWith('/login') || pathname.startsWith('/api/auth');
+  const sessionToken =
+    request.cookies.get('authjs.session-token')?.value ||
+    request.cookies.get('__Secure-authjs.session-token')?.value;
+
+  if (!isAuthPage && !sessionToken) {
+    const isMobile = pathname.startsWith('/m');
+    const loginUrl = new URL(isMobile ? '/m/login' : '/d/login', request.url);
+    loginUrl.searchParams.set('callbackUrl', pathname);
+    return NextResponse.redirect(loginUrl);
+  }
 
   return NextResponse.next();
 }

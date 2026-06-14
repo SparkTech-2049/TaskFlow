@@ -7,25 +7,11 @@ import { cn } from '@/lib/utils/cn';
 import { useCalendar } from '@/lib/hooks/use-calendar';
 import { useTaskStore } from '@/lib/stores/task-store';
 import { useSettingsStore } from '@/lib/stores/settings-store';
-import { CATEGORIES, PRIORITIES } from '@/lib/constants';
+import { getPriorityColor, getCategoryInfo, getSubCategoryName, WEEKDAYS } from '@/components/shared/constants';
 import { StatCards } from '@/components/desktop/stat-cards';
 import { TaskItem } from '@/components/desktop/task-item';
 import { AddTaskModal } from '@/components/desktop/add-task-modal';
 import type { Task } from '@/lib/types';
-
-function getPriorityColor(priorityLevel: string): string {
-  return PRIORITIES.find((p) => p.id === priorityLevel)?.color ?? '#94A3B8';
-}
-
-function getCategoryInfo(cat: string) {
-  return CATEGORIES.find((c) => c.id === cat);
-}
-
-function getSubCategoryName(cat: string, subCat: string | null): string | null {
-  if (!subCat) return null;
-  const category = CATEGORIES.find((c) => c.id === cat);
-  return category?.subCategories?.find((s) => s.id === subCat)?.name ?? null;
-}
 
 function HomeContent() {
   const searchParams = useSearchParams();
@@ -125,7 +111,7 @@ function HomeContent() {
     return map;
   }, [filteredTasks]);
 
-  const weekDays = ['一', '二', '三', '四', '五', '六', '日'];
+  const weekDays = WEEKDAYS;
 
   function handleAddTask(data: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'archivedAt' | 'completedAt' | 'parentId'>) {
     addTask({ ...data, id: Date.now(), parentId: null, archivedAt: null, completedAt: null, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });

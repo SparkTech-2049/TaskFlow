@@ -15,17 +15,17 @@ export const CATEGORIES = [
 // 优先级定义
 export const PRIORITIES = [
   { id: 'urgent_important', name: '紧急且重要', color: '#E53E3E' },
-  { id: 'important', name: '重要不紧急', color: '#ED8936' },
-  { id: 'urgent', name: '紧急不重要', color: '#3B6EF6' },
-  { id: 'normal', name: '普通', color: '#2DB87A' },
+  { id: 'important', name: '重要不紧急', color: '#FFC107' },
+  { id: 'urgent', name: '紧急不重要', color: '#ED8936' },
+  { id: 'normal', name: '普通', color: '#07C160' },
 ];
 
 // 四象限颜色
 export const QUADRANT_COLORS: Record<string, { bg: string; border: string; title: string; name: string }> = {
   urgent_important: { bg: '#E53E3E06', border: '#E53E3E20', title: '#E53E3E', name: '紧急且重要' },
-  important: { bg: '#ED893606', border: '#ED893620', title: '#ED8936', name: '重要不紧急' },
-  urgent: { bg: '#3B6EF606', border: '#3B6EF620', title: '#3B6EF6', name: '紧急不重要' },
-  normal: { bg: '#94A3B806', border: '#94A3B820', title: '#07C160', name: '不紧急不重要' },
+  important: { bg: '#FFC10706', border: '#FFC10720', title: '#FFC107', name: '重要不紧急' },
+  urgent: { bg: '#ED893606', border: '#ED893620', title: '#ED8936', name: '紧急不重要' },
+  normal: { bg: '#07C16006', border: '#07C16020', title: '#07C160', name: '不紧急不重要' },
 };
 
 // 跨月类型颜色

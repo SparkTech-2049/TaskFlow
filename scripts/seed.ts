@@ -12,38 +12,39 @@ const sql = neon(POSTGRES_URL);
 async function seed() {
   console.log('🌱 Seeding database...');
 
-  const passwordHash = await bcrypt.hash('admin123', 10);
+  const passwordHash = await bcrypt.hash('Task@Flow2026', 10);
 
-  const existingUsers = await sql`SELECT id FROM users WHERE username = 'admin'`;
+  const existingUsers = await sql`SELECT id FROM users WHERE username = 'admin_taskflow'`;
   let userId: number;
 
   if (existingUsers.length === 0) {
     const [user] = await sql`
       INSERT INTO users (username, email, password_hash, skin)
-      VALUES ('admin', 'admin@taskflow.dev', ${passwordHash}, 'default')
+      VALUES ('admin_taskflow', 'admin@taskflow.dev', ${passwordHash}, 'default')
       RETURNING id
     `;
     userId = user.id;
-    console.log(`✅ Created user: admin (id=${userId})`);
+    console.log(`✅ Created user: admin_taskflow (id=${userId})`);
   } else {
     userId = existingUsers[0].id;
     await sql`UPDATE users SET password_hash = ${passwordHash} WHERE id = ${userId}`;
-    console.log(`✅ User admin exists (id=${userId}), password updated`);
+    console.log(`✅ User admin_taskflow exists (id=${userId}), password updated`);
   }
 
   const existingCats = await sql`SELECT id FROM categories WHERE user_id = ${userId}`;
   if (existingCats.length === 0) {
+    const p = `u${userId}-`;
     await sql`
       INSERT INTO categories (id, user_id, name, color, icon, parent_id, sort_order) VALUES
-      ('project', ${userId}, '工作', '#2B8CED', 'Briefcase', NULL, 0),
-      ('other', ${userId}, '琐事', '#8B6FC0', 'Coffee', NULL, 1),
-      ('credit', ${userId}, '理财', '#E5534D', 'Wallet', NULL, 2),
-      ('study', ${userId}, '学习', '#7C4DFF', 'BookOpen', NULL, 3),
-      ('project-setup', ${userId}, '项目搭建', '#8B6FC0', NULL, 'other', 0),
-      ('study-improve', ${userId}, '学习提升', '#8B6FC0', NULL, 'other', 1),
-      ('long-term', ${userId}, '长期维护', '#8B6FC0', NULL, 'other', 2),
-      ('register-download', ${userId}, '注册下载', '#8B6FC0', NULL, 'other', 3),
-      ('quick-task', ${userId}, '随手办', '#8B6FC0', NULL, 'other', 4)
+      (${'u' + userId + '-project'}, ${userId}, '工作', '#2B8CED', 'Briefcase', NULL, 0),
+      (${'u' + userId + '-other'}, ${userId}, '琐事', '#8B6FC0', 'Coffee', NULL, 1),
+      (${'u' + userId + '-credit'}, ${userId}, '理财', '#E5534D', 'Wallet', NULL, 2),
+      (${'u' + userId + '-study'}, ${userId}, '学习', '#7C4DFF', 'BookOpen', NULL, 3),
+      (${'u' + userId + '-project-setup'}, ${userId}, '项目搭建', '#8B6FC0', NULL, ${'u' + userId + '-other'}, 0),
+      (${'u' + userId + '-study-improve'}, ${userId}, '学习提升', '#8B6FC0', NULL, ${'u' + userId + '-other'}, 1),
+      (${'u' + userId + '-long-term'}, ${userId}, '长期维护', '#8B6FC0', NULL, ${'u' + userId + '-other'}, 2),
+      (${'u' + userId + '-register-download'}, ${userId}, '注册下载', '#8B6FC0', NULL, ${'u' + userId + '-other'}, 3),
+      (${'u' + userId + '-quick-task'}, ${userId}, '随手办', '#8B6FC0', NULL, ${'u' + userId + '-other'}, 4)
     `;
     console.log('✅ Created categories');
   } else {
@@ -98,7 +99,7 @@ async function seed() {
   }
 
   console.log('🎉 Seed complete!');
-  console.log('   Login: admin / admin123');
+  console.log('   Login: admin_taskflow / Task@Flow2026');
 }
 
 seed().catch((e) => {

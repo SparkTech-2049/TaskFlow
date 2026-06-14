@@ -14,7 +14,7 @@
   --accent-cyan: #0BBFD9;
   --cta-orange: #F97316;
   --priority-urgent: #E53E3E;
-  --priority-important: #ED8936;
+  --priority-important: #FFC107;
   --priority-normal: #2DB87A;
   --cat-project: #2B8CED;
   --cat-other: #8B6FC0;
@@ -40,6 +40,7 @@
 
 [data-skin="huawei"] {
   --accent-blue: #CF0A2C;
+  --accent-indigo: #E63E30;
   --gradient-brand-from: #CF0A2C;
   --gradient-brand-to: #E63E30;
 }
@@ -96,10 +97,10 @@ body {
   );
 }
 
-.scrollbar-none {
+* {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-.scrollbar-none::-webkit-scrollbar {
+*::-webkit-scrollbar {
   display: none;
 }

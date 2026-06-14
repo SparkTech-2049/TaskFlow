@@ -59,19 +59,19 @@ describe('优先级体系 (PRD §6.1)', () => {
     expect(urgent?.color).toBe('#E53E3E');
   });
 
-  it('重要不紧急应为橙色 #ED8936', () => {
+  it('重要不紧急应为黄色 #FFC107', () => {
     const important = PRIORITIES.find((p) => p.id === 'important');
-    expect(important?.color).toBe('#ED8936');
+    expect(important?.color).toBe('#FFC107');
   });
 
-  it('紧急不重要应为蓝色 #3B6EF6', () => {
+  it('紧急不重要应为橙色 #ED8936', () => {
     const urgent = PRIORITIES.find((p) => p.id === 'urgent');
-    expect(urgent?.color).toBe('#3B6EF6');
+    expect(urgent?.color).toBe('#ED8936');
   });
 
-  it('普通应为绿色 #2DB87A', () => {
+  it('普通应为微信绿 #07C160', () => {
     const normal = PRIORITIES.find((p) => p.id === 'normal');
-    expect(normal?.color).toBe('#2DB87A');
+    expect(normal?.color).toBe('#07C160');
   });
 });
 
@@ -88,8 +88,8 @@ describe('四象限颜色 (PRD §6.2)', () => {
     expect(QUADRANT_COLORS.normal.title).toBe('#07C160');
   });
 
-  it('不重要不紧急底色应为 #94A3B806', () => {
-    expect(QUADRANT_COLORS.normal.bg).toBe('#94A3B806');
+  it('不重要不紧急底色应为 #07C16006', () => {
+    expect(QUADRANT_COLORS.normal.bg).toBe('#07C16006');
   });
 });
 

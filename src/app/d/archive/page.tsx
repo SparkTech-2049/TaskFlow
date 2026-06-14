@@ -4,14 +4,14 @@ import { useState, useMemo } from 'react';
 import { RotateCcw, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { useTaskStore } from '@/lib/stores/task-store';
-import { CATEGORIES, PRIORITIES } from '@/lib/constants';
+import { getPriorityColor, getCategoryInfo } from '@/components/shared/constants';
 import { MonthPicker } from '@/components/desktop/month-picker';
 import type { Task } from '@/lib/types';
 
 type CatFilter = '' | 'project' | 'other' | 'credit' | 'study';
 
 export default function DesktopArchivePage() {
-  const { tasks, setTasks, updateTask, deleteTask } = useTaskStore();
+  const { tasks, updateTask, deleteTask } = useTaskStore();
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth());
   const [catFilter, setCatFilter] = useState<CatFilter>('');
@@ -36,14 +36,6 @@ export default function DesktopArchivePage() {
     }
     return Object.entries(groups).sort(([a], [b]) => b.localeCompare(a));
   }, [filteredArchived]);
-
-  function getPriorityColor(priorityLevel: string): string {
-    return PRIORITIES.find((p) => p.id === priorityLevel)?.color ?? '#94A3B8';
-  }
-
-  function getCategoryInfo(cat: string) {
-    return CATEGORIES.find((c) => c.id === cat);
-  }
 
   const catFilters: { key: CatFilter; label: string }[] = [
     { key: '', label: '全部' },

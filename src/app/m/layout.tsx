@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { Calendar, ListChecks, Grid2X2, Archive, Settings, Zap } from 'lucide-react';
-import { useSettingsStore } from '@/lib/stores/settings-store';
+import { useSettingsStore, applySkin, applyFontSize } from '@/lib/stores/settings-store';
 import { useTaskStore } from '@/lib/stores/task-store';
 import { ReminderScheduler } from '@/components/reminder-scheduler';
 
@@ -22,8 +22,13 @@ export default function MobileLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { skin } = useSettingsStore();
+  const { skin, fontSize } = useSettingsStore();
   const { fetchFromServer, _hydrated } = useTaskStore();
+
+  useEffect(() => {
+    applySkin(skin);
+    applyFontSize(fontSize);
+  }, [skin, fontSize]);
 
   useEffect(() => {
     if (_hydrated) {

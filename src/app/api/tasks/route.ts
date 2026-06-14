@@ -2,11 +2,11 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { tasks } from '@/lib/db/schema';
 import { eq, and, gte, lt } from 'drizzle-orm';
-import { auth } from '@/lib/auth/config';
+import { getAuthUserId } from '@/lib/auth/api-auth';
 
 export async function GET(request: Request) {
-  const session = await auth();
-  const userId = Number(session?.user?.id) || 1;
+  const userId = await getAuthUserId();
+  if (userId instanceof NextResponse) return userId;
 
   const { searchParams } = new URL(request.url);
   const month = searchParams.get('month');
@@ -22,21 +22,22 @@ export async function GET(request: Request) {
 
     result = await db.select().from(tasks).where(
       and(
+        eq(tasks.userId, userId),
         eq(tasks.archived, false),
         gte(tasks.deadline, startDate),
         lt(tasks.deadline, endDate),
       )
     );
   } else {
-    result = await db.select().from(tasks);
+    result = await db.select().from(tasks).where(eq(tasks.userId, userId));
   }
 
   return NextResponse.json(result);
 }
 
 export async function POST(request: Request) {
-  const session = await auth();
-  const userId = Number(session?.user?.id) || 1;
+  const userId = await getAuthUserId();
+  if (userId instanceof NextResponse) return userId;
 
   const body = await request.json();
   const result = await db.insert(tasks).values({

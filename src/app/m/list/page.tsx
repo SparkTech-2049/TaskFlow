@@ -14,66 +14,18 @@ import { useTaskStore } from '@/lib/stores/task-store';
 import { useSettingsStore } from '@/lib/stores/settings-store';
 import { getCrossMonthType, getCrossPeriodProgress } from '@/lib/utils/cross-month';
 import { cn } from '@/lib/utils/cn';
+import { CAT_ORDER, CAT_NAMES, CAT_COLORS, SUB_CAT_ORDER, SUB_CAT_NAMES, PRIORITY_COLORS, getCatPath } from '@/components/shared/constants';
+import { useMonthNav } from '@/components/shared/use-month-nav';
 
 /* ── 常量 ── */
-const CAT_ORDER = ['project', 'other', 'credit', 'study'] as const;
-const CAT_NAMES: Record<string, string> = {
-  project: '工作',
-  other: '琐事',
-  credit: '理财',
-  study: '学习',
-};
-const CAT_COLORS: Record<string, string> = {
-  project: '#2B8CED',
-  other: '#8B6FC0',
-  credit: '#E5534D',
-  study: '#7C4DFF',
-};
-const SUB_CAT_ORDER = ['project-setup', 'study-improve', 'long-term', 'register-download', 'quick-task'] as const;
-const SUB_CAT_NAMES: Record<string, string> = {
-  'project-setup': '项目搭建',
-  'study-improve': '学习提升',
-  'long-term': '长期维护',
-  'register-download': '注册下载',
-  'quick-task': '随手办',
-};
-
-const PRIORITY_COLORS: Record<string, string> = {
-  urgent_important: '#E53E3E',
-  important: '#ED8936',
-  urgent: '#3B6EF6',
-  normal: '#2DB87A',
-};
-
 const FILTERS = ['全部', '待完成', '已完成'] as const;
 type Filter = (typeof FILTERS)[number];
-
-/* ── 月份导航 hook ── */
-function useMonthNav() {
-  const now = new Date();
-  const [year, setYear] = useState(now.getFullYear());
-  const [month, setMonth] = useState(now.getMonth()); // 0-indexed
-
-  const label = `${year}年${month + 1}月`;
-  const goPrev = () => {
-    if (month === 0) { setYear((y) => y - 1); setMonth(11); }
-    else setMonth((m) => m - 1);
-  };
-  const goNext = () => {
-    if (month === 11) { setYear((y) => y + 1); setMonth(0); }
-    else setMonth((m) => m + 1);
-  };
-  const currentMonthDate = new Date(year, month, 1);
-  const monthKey = `${year}-${String(month + 1).padStart(2, '0')}`;
-
-  return { label, goPrev, goNext, currentMonthDate, monthKey, year, month };
-}
 
 /* ── 任务行 ── */
 function TaskRow({ task }: { task: ReturnType<typeof useTaskStore.getState>['tasks'][number] }) {
   const toggleDone = useTaskStore((s) => s.updateTask);
   const priorityColor = PRIORITY_COLORS[task.priorityLevel] || PRIORITY_COLORS.normal;
-  const catPath = task.subCat ? `${CAT_NAMES[task.cat] || task.cat} > ${SUB_CAT_NAMES[task.subCat] || task.subCat}` : (CAT_NAMES[task.cat] || task.cat);
+  const catPath = getCatPath(task.cat, task.subCat);
 
   return (
     <div className="flex items-center gap-2 rounded-xl bg-bg-elevated px-2 py-2.5">
@@ -141,8 +93,8 @@ export default function MobileListPage() {
           longterm: t.longterm,
           done: t.done,
           deadline: t.deadline,
-          start_date: t.startDate,
-          end_date: t.endDate,
+          startDate: t.startDate,
+          endDate: t.endDate,
         },
         currentMonthDate
       );

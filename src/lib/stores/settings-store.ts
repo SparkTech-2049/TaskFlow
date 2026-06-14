@@ -18,6 +18,19 @@ interface SettingsStore {
   setBarkWebhook: (url: string) => void;
 }
 
+function applySkin(skin: SkinType) {
+  if (typeof document !== 'undefined') {
+    document.documentElement.setAttribute('data-skin', skin);
+  }
+}
+
+function applyFontSize(fontSize: 'small' | 'medium' | 'large') {
+  if (typeof document !== 'undefined') {
+    const map = { small: '14px', medium: '16px', large: '18px' };
+    document.documentElement.style.fontSize = map[fontSize];
+  }
+}
+
 export const useSettingsStore = create<SettingsStore>()(
   persist(
     (set) => ({
@@ -27,24 +40,25 @@ export const useSettingsStore = create<SettingsStore>()(
       hideEmptyCat: false,
       defaultSort: 'priority',
       barkWebhook: '',
-      setSkin: (skin) => {
-        set({ skin });
-        if (typeof document !== 'undefined') {
-          document.documentElement.setAttribute('data-skin', skin);
-        }
-      },
-      setFontSize: (fontSize) => {
-        set({ fontSize });
-        if (typeof document !== 'undefined') {
-          const map = { small: '14px', medium: '16px', large: '18px' };
-          document.documentElement.style.fontSize = map[fontSize];
-        }
-      },
+      setSkin: (skin) => set({ skin }),
+      setFontSize: (fontSize) => set({ fontSize }),
       setShowDone: (showDone) => set({ showDone }),
       setHideEmptyCat: (hideEmptyCat) => set({ hideEmptyCat }),
       setDefaultSort: (defaultSort) => set({ defaultSort }),
       setBarkWebhook: (barkWebhook) => set({ barkWebhook }),
     }),
-    { name: 'taskflow-settings' }
+    {
+      name: 'taskflow-settings',
+      onRehydrateStorage: () => {
+        return (state) => {
+          if (state) {
+            applySkin(state.skin);
+            applyFontSize(state.fontSize);
+          }
+        };
+      },
+    }
   )
 );
+
+export { applySkin, applyFontSize };

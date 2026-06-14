@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { tasks } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
-import { auth } from '@/lib/auth/config';
+import { eq, and } from 'drizzle-orm';
+import { getAuthUserId } from '@/lib/auth/api-auth';
 
 const ALLOWED_FIELDS = [
   'cat', 'subCat', 'title', 'meta', 'priorityLevel',
@@ -34,11 +34,13 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth();
-  const userId = Number(session?.user?.id) || 1;
+  const userId = await getAuthUserId();
+  if (userId instanceof NextResponse) return userId;
 
   const { id } = await params;
-  const result = await db.select().from(tasks).where(eq(tasks.id, Number(id)));
+  const result = await db.select().from(tasks).where(
+    and(eq(tasks.id, Number(id)), eq(tasks.userId, userId))
+  );
   if (!result.length) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
@@ -49,8 +51,8 @@ export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth();
-  const userId = Number(session?.user?.id) || 1;
+  const userId = await getAuthUserId();
+  if (userId instanceof NextResponse) return userId;
 
   const { id } = await params;
   const body = await request.json();
@@ -69,7 +71,7 @@ export async function PUT(
 
   const result = await db.update(tasks)
     .set({ ...updates, updatedAt: new Date() })
-    .where(eq(tasks.id, Number(id)))
+    .where(and(eq(tasks.id, Number(id)), eq(tasks.userId, userId)))
     .returning();
 
   if (result.length === 0) {
@@ -83,10 +85,10 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth();
-  const userId = Number(session?.user?.id) || 1;
+  const userId = await getAuthUserId();
+  if (userId instanceof NextResponse) return userId;
 
   const { id } = await params;
-  await db.delete(tasks).where(eq(tasks.id, Number(id)));
+  await db.delete(tasks).where(and(eq(tasks.id, Number(id)), eq(tasks.userId, userId)));
   return NextResponse.json({ ok: true });
 }

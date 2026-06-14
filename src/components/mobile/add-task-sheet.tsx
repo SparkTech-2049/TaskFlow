@@ -21,7 +21,7 @@ const PRIORITY_OPTIONS = [
   { key: 'urgent_important', label: '紧急·重要', color: '#E53E3E' },
   { key: 'important', label: '重要·不紧急', color: '#FFC107' },
   { key: 'urgent', label: '紧急·不重要', color: '#ED8936' },
-  { key: 'normal', label: '普通', color: '#2DB87A' },
+  { key: 'normal', label: '普通', color: '#07C160' },
 ] as const;
 
 interface AddTaskSheetProps {
@@ -31,7 +31,6 @@ interface AddTaskSheetProps {
 
 export function AddTaskSheet({ open, onClose }: AddTaskSheetProps) {
   const addTask = useTaskStore((s) => s.addTask);
-  const tasks = useTaskStore((s) => s.tasks);
   const { categories } = useCategories();
 
   const CAT_OPTIONS = categories.map((c) => ({ id: c.id, label: c.name }));

@@ -2,19 +2,19 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { categories } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
-import { auth } from '@/lib/auth/config';
+import { getAuthUserId } from '@/lib/auth/api-auth';
 
 export async function GET() {
-  const session = await auth();
-  const userId = Number(session?.user?.id) || 1;
+  const userId = await getAuthUserId();
+  if (userId instanceof NextResponse) return userId;
 
   const result = await db.select().from(categories).where(eq(categories.userId, userId));
   return NextResponse.json(result);
 }
 
 export async function POST(request: Request) {
-  const session = await auth();
-  const userId = Number(session?.user?.id) || 1;
+  const userId = await getAuthUserId();
+  if (userId instanceof NextResponse) return userId;
 
   const body = await request.json();
 

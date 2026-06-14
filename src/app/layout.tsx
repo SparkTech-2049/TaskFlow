@@ -39,7 +39,10 @@ export default function RootLayout({
   return (
     <html
       lang="zh-CN"
+      data-skin="default"
+      style={{ fontSize: '16px' }}
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-bg-canvas text-text-primary">
         <SessionProvider>{children}</SessionProvider>

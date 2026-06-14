@@ -1,13 +1,16 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-import GitHub from 'next-auth/providers/github';
 import { DrizzleAdapter } from '@auth/drizzle-adapter';
 import bcrypt from 'bcryptjs';
 
 function createAuthConfig() {
-  const { getDb } = require('@/lib/db');
+  const hasDb = !!process.env.POSTGRES_URL;
+
   return {
-    adapter: DrizzleAdapter(getDb()),
+    ...(hasDb ? (() => {
+      const { getDb } = require('@/lib/db');
+      return { adapter: DrizzleAdapter(getDb()) };
+    })() : {}),
     providers: [
       Credentials({
         name: 'credentials',
@@ -15,30 +18,41 @@ function createAuthConfig() {
           username: { label: '用户名', type: 'text' },
           password: { label: '密码', type: 'password' },
         },
-        async authorize(credentials: Partial<Record<string, unknown>>) {
+        async authorize(credentials: Partial<Record<string, unknown>>, request) {
           if (!credentials?.username || !credentials?.password) return null;
+
+          const ip = request?.headers?.get?.('x-forwarded-for')
+            || request?.headers?.get?.('x-real-ip')
+            || 'unknown';
+
           const { getDb } = await import('@/lib/db');
-          const { users } = await import('@/lib/db/schema');
+          const { users, bannedIps } = await import('@/lib/db/schema');
           const { eq } = await import('drizzle-orm');
-          const result = await getDb()
+          const db = getDb();
+
+          const banned = await db.select().from(bannedIps).where(eq(bannedIps.ip, ip)).limit(1);
+          if (banned.length > 0) return null;
+
+          const result = await db
             .select()
             .from(users)
             .where(eq(users.username, credentials.username as string))
             .limit(1);
+
           const user = result[0];
           if (!user || !user.passwordHash) return null;
+
           const isValid = await bcrypt.compare(credentials.password as string, user.passwordHash);
-          if (!isValid) return null;
+          if (!isValid) {
+            await db.insert(bannedIps).values({ ip, reason: '密码错误' }).onConflictDoNothing();
+            return null;
+          }
+
           return { id: String(user.id), name: user.username, email: user.email };
         },
       }),
-      GitHub({
-        clientId: process.env.GITHUB_ID,
-        clientSecret: process.env.GITHUB_SECRET,
-      }),
     ],
     session: { strategy: 'jwt' } as const,
-    pages: { signIn: '/m/login' },
   };
 }
 

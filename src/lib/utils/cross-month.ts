@@ -4,8 +4,8 @@ interface TaskForCrossMonth {
   longterm: boolean;
   done: boolean;
   deadline: string | null;
-  start_date: string | null;
-  end_date: string | null;
+  startDate: string | null;
+  endDate: string | null;
 }
 
 export function getCrossMonthType(
@@ -34,10 +34,10 @@ export function getCrossMonthType(
   )
     return 'overdue';
   if (
-    task.start_date &&
-    task.end_date &&
-    new Date(task.start_date) <= monthEnd &&
-    new Date(task.end_date) >= monthStart
+    task.startDate &&
+    task.endDate &&
+    new Date(task.startDate) <= monthEnd &&
+    new Date(task.endDate) >= monthStart
   )
     return 'cross_period';
   return 'normal';

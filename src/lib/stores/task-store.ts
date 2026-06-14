@@ -37,6 +37,9 @@ interface TaskStore {
   fetchFromServer: () => Promise<void>;
 }
 
+let persistTimer: ReturnType<typeof setTimeout> | null = null;
+let pendingPersist: Task[] | null = null;
+
 async function persistToIndexedDB(tasks: Task[]) {
   try {
     await localDB.tasks.clear();
@@ -44,6 +47,18 @@ async function persistToIndexedDB(tasks: Task[]) {
       tasks.map((t) => ({ ...t, userId: 1 }))
     );
   } catch {}
+}
+
+function debouncedPersist(tasks: Task[]) {
+  pendingPersist = tasks;
+  if (persistTimer) clearTimeout(persistTimer);
+  persistTimer = setTimeout(() => {
+    if (pendingPersist) {
+      persistToIndexedDB(pendingPersist);
+      pendingPersist = null;
+    }
+    persistTimer = null;
+  }, 300);
 }
 
 function mapTask(row: Record<string, unknown>): Task {
@@ -81,13 +96,13 @@ export const useTaskStore = create<TaskStore>()(
       _hydrated: false,
       setTasks: (tasks) => {
         set({ tasks });
-        persistToIndexedDB(tasks);
+        debouncedPersist(tasks);
       },
       addTask: (task) => {
         const normalized = normalizeTask(task);
         set((state) => {
           const newTasks = [...state.tasks, normalized];
-          persistToIndexedDB(newTasks);
+          debouncedPersist(newTasks);
           return { tasks: newTasks };
         });
         fetch('/api/tasks', {
@@ -107,6 +122,20 @@ export const useTaskStore = create<TaskStore>()(
             reminder: normalized.reminder,
             monthly_repeat: normalized.monthlyRepeat,
           }),
+        }).then(async (res) => {
+          if (res.ok) {
+            const serverTask = await res.json();
+            const serverId = Number(serverTask.id);
+            if (serverId && serverId !== normalized.id) {
+              set((state) => {
+                const updated = state.tasks.map((t) =>
+                  t.id === normalized.id ? { ...t, id: serverId } : t
+                );
+                debouncedPersist(updated);
+                return { tasks: updated };
+              });
+            }
+          }
         }).catch(() => {
           enqueueSync('create', normalized as unknown as Record<string, unknown>).catch(() => {});
         });
@@ -128,7 +157,7 @@ export const useTaskStore = create<TaskStore>()(
           const newTasks = state.tasks.map((t) =>
             t.id === id ? { ...t, ...normalized } : t
           );
-          persistToIndexedDB(newTasks);
+          debouncedPersist(newTasks);
           return { tasks: newTasks };
         });
         const task = get().tasks.find((t) => t.id === id);
@@ -168,7 +197,7 @@ export const useTaskStore = create<TaskStore>()(
       deleteTask: (id) => {
         set((state) => {
           const newTasks = state.tasks.filter((t) => t.id !== id);
-          persistToIndexedDB(newTasks);
+          debouncedPersist(newTasks);
           return { tasks: newTasks };
         });
         fetch(`/api/tasks/${id}`, { method: 'DELETE' }).catch(() => {

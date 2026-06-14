@@ -5,6 +5,8 @@ import { cn } from '@/lib/utils/cn';
 import { useSettingsStore } from '@/lib/stores/settings-store';
 import { useTaskStore } from '@/lib/stores/task-store';
 import { CATEGORIES } from '@/lib/constants';
+import { useCategories } from '@/lib/hooks/use-categories';
+import { exportJSON, exportCSV, exportICS } from '@/lib/utils/export';
 import {
   Type, Palette, SortAsc,
   Trash2, Download, CalendarPlus, Tag, Bell, Plus,
@@ -41,32 +43,14 @@ export default function DesktopSettingsPage() {
   const [newSubCatName, setNewSubCatName] = useState('');
   const [addingToCat, setAddingToCat] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const { categories } = useCategories();
   const [catList, setCatList] = useState(CATEGORIES.map((c) => ({ ...c, subCategories: c.subCategories ? [...c.subCategories] : undefined })));
-  const [catsLoaded, setCatsLoaded] = useState(false);
 
   useEffect(() => {
-    if (catsLoaded) return;
-    fetch('/api/categories')
-      .then((r) => r.ok ? r.json() : [])
-      .then((data) => {
-        if (data.length > 0) {
-          const topLevel = data.filter((c: Record<string, unknown>) => !c.parentId && !c.parent_id);
-          const subLevel = data.filter((c: Record<string, unknown>) => c.parentId || c.parent_id);
-          const mapped = topLevel.map((cat: Record<string, unknown>) => ({
-            id: cat.id,
-            name: cat.name,
-            color: cat.color,
-            icon: cat.icon,
-            subCategories: subLevel
-              .filter((s: Record<string, unknown>) => (s.parentId || s.parent_id) === cat.id)
-              .map((s: Record<string, unknown>) => ({ id: s.id, name: s.name, color: s.color })),
-          }));
-          setCatList(mapped);
-        }
-        setCatsLoaded(true);
-      })
-      .catch(() => setCatsLoaded(true));
-  }, [catsLoaded]);
+    if (categories.length > 0) {
+      setCatList(categories as typeof catList);
+    }
+  }, [categories]);
 
   const {
     skin, setSkin,
@@ -77,7 +61,7 @@ export default function DesktopSettingsPage() {
     barkWebhook, setBarkWebhook,
   } = useSettingsStore();
 
-  const { tasks, setTasks } = useTaskStore();
+  const { tasks } = useTaskStore();
 
   function showToast(msg: string) {
     setToast(msg);
@@ -93,65 +77,23 @@ export default function DesktopSettingsPage() {
   }
 
   function handleExportJSON() {
-    const data = JSON.stringify({ tasks, exportedAt: new Date().toISOString() }, null, 2);
-    const blob = new Blob([data], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `taskflow-export-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+    exportJSON(tasks);
     setExportStatus('done');
     showToast('JSON 导出成功');
     setTimeout(() => setExportStatus('idle'), 2000);
   }
 
   function handleExportCSV() {
-    const headers = ['id', 'title', 'cat', 'subCat', 'priorityLevel', 'deadline', 'done', 'archived', 'longterm', 'meta'];
-    const rows = tasks.map((t) => headers.map((h) => JSON.stringify((t as unknown as Record<string, unknown>)[h] ?? '')).join(','));
-    const csv = [headers.join(','), ...rows].join('\n');
-    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `taskflow-export-${new Date().toISOString().slice(0, 10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+    exportCSV(tasks);
     showToast('CSV 导出成功');
   }
 
   function handleExportICS() {
-    const activeTasks = tasks.filter((t) => !t.archived && t.deadline);
-    if (activeTasks.length === 0) {
+    const result = exportICS(tasks);
+    if (!result) {
       showToast('没有可导出的任务');
       return;
     }
-    const lines = [
-      'BEGIN:VCALENDAR',
-      'VERSION:2.0',
-      'PRODID:-//TaskFlow//CN',
-    ];
-    activeTasks.forEach((t) => {
-      const dateStr = t.deadline!.replace(/-/g, '');
-      const timeStr = t.time ? t.time.replace(':', '') + '00' : '000000';
-      lines.push(
-        'BEGIN:VEVENT',
-        `DTSTART:${dateStr}T${timeStr}`,
-        `DTEND:${dateStr}T${timeStr}`,
-        `SUMMARY:${t.title}`,
-        t.meta ? `DESCRIPTION:${t.meta}` : '',
-        'END:VEVENT',
-      );
-    });
-    lines.push('END:VCALENDAR');
-    const ics = lines.filter(Boolean).join('\r\n');
-    const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `taskflow-calendar-${new Date().toISOString().slice(0, 10)}.ics`;
-    a.click();
-    URL.revokeObjectURL(url);
     showToast('日历文件已导出，可导入 Apple/Google 日历');
   }
 

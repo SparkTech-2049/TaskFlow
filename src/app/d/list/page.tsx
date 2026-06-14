@@ -1,7 +1,7 @@
 ﻿'use client';
 
 import { useState, useMemo } from 'react';
-import { Plus, Archive } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { useTaskStore } from '@/lib/stores/task-store';
 import { useSettingsStore } from '@/lib/stores/settings-store';
@@ -36,7 +36,7 @@ export default function DesktopListPage() {
   const currentMonthDate = useMemo(() => new Date(year, month, 1), [year, month]);
 
   const overdueTasks = useMemo(
-    () => activeTasks.filter((t) => !t.done && getCrossMonthType({ longterm: t.longterm, done: t.done, deadline: t.deadline, start_date: t.startDate, end_date: t.endDate }, currentMonthDate) === 'overdue'),
+    () => activeTasks.filter((t) => !t.done && getCrossMonthType({ longterm: t.longterm, done: t.done, deadline: t.deadline, startDate: t.startDate, endDate: t.endDate }, currentMonthDate) === 'overdue'),
     [activeTasks, currentMonthDate]
   );
 
@@ -46,7 +46,7 @@ export default function DesktopListPage() {
   );
 
   const crossPeriodTasks = useMemo(
-    () => activeTasks.filter((t) => !t.done && getCrossMonthType({ longterm: t.longterm, done: t.done, deadline: t.deadline, start_date: t.startDate, end_date: t.endDate }, currentMonthDate) === 'cross_period'),
+    () => activeTasks.filter((t) => !t.done && getCrossMonthType({ longterm: t.longterm, done: t.done, deadline: t.deadline, startDate: t.startDate, endDate: t.endDate }, currentMonthDate) === 'cross_period'),
     [activeTasks, currentMonthDate]
   );
 

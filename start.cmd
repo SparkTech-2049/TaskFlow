@@ -2,8 +2,10 @@
 chcp 65001 >nul 2>&1
 title TaskFlow Dev Server
 
-echo [1/2] Killing existing node processes...
-taskkill /f /im node.exe >nul 2>&1
+echo [1/2] Killing existing process on port 3000...
+for /f "tokens=5" %%a in ('netstat -aon ^| findstr ":3000 " ^| findstr "LISTENING"') do (
+  taskkill /f /pid %%a >nul 2>&1
+)
 timeout /t 1 /nobreak >nul
 
 echo [2/2] Starting dev server...

@@ -8,6 +8,7 @@ import {
 import { useSettingsStore } from '@/lib/stores/settings-store';
 import { useTaskStore } from '@/lib/stores/task-store';
 import { useCategories } from '@/lib/hooks/use-categories';
+import { exportJSON, exportCSV, exportICS } from '@/lib/utils/export';
 import { cn } from '@/lib/utils/cn';
 
 const FONT_SIZES = [
@@ -114,80 +115,24 @@ export default function MobileSettingsPage() {
   };
 
   const handleExportJSON = () => {
-    const data = localStorage.getItem('taskflow-tasks');
-    if (!data) return;
-    const blob = new Blob([data], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'taskflow-tasks.json';
-    a.click();
-    URL.revokeObjectURL(url);
+    exportJSON(tasks);
   };
 
   const handleExportCSV = () => {
-    const raw = localStorage.getItem('taskflow-tasks');
-    if (!raw) return;
-    try {
-      const parsed = JSON.parse(raw);
-      const taskList: Record<string, unknown>[] = parsed?.state?.tasks ?? [];
-      if (taskList.length === 0) return;
-      const headers = Object.keys(taskList[0]);
-      const csv = [
-        headers.join(','),
-        ...taskList.map((t) =>
-          headers.map((h) => `"${String((t as Record<string, unknown>)[h] ?? '').replace(/"/g, '""')}"`).join(',')
-        ),
-      ].join('\n');
-      const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'taskflow-tasks.csv';
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch { /* ignore */ }
+    exportCSV(tasks);
   };
 
   const handleExportICS = () => {
-    const raw = localStorage.getItem('taskflow-tasks');
-    if (!raw) return;
-    try {
-      const parsed = JSON.parse(raw);
-      const taskList: Record<string, unknown>[] = parsed?.state?.tasks ?? [];
-      const activeTasks = taskList.filter((t) => !t.archived && t.deadline);
-      if (activeTasks.length === 0) {
-        alert('没有可导出的任务');
-        return;
-      }
-      const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//TaskFlow//CN'];
-      activeTasks.forEach((t) => {
-        const dateStr = String(t.deadline).replace(/-/g, '');
-        const timeStr = t.time ? String(t.time).replace(':', '') + '00' : '000000';
-        lines.push(
-          'BEGIN:VEVENT',
-          `DTSTART:${dateStr}T${timeStr}`,
-          `DTEND:${dateStr}T${timeStr}`,
-          `SUMMARY:${t.title}`,
-          t.meta ? `DESCRIPTION:${t.meta}` : '',
-          'END:VEVENT',
-        );
-      });
-      lines.push('END:VCALENDAR');
-      const ics = lines.filter(Boolean).join('\r\n');
-      const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'taskflow-calendar.ics';
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch { /* ignore */ }
+    const result = exportICS(tasks);
+    if (!result) {
+      alert('没有可导出的任务');
+    }
   };
 
   const handleClearCache = () => {
     if (confirm('确定要清除缓存吗？此操作不可恢复。')) {
-      localStorage.clear();
+      localStorage.removeItem('taskflow-tasks');
+      localStorage.removeItem('taskflow-settings');
       window.location.reload();
     }
   };

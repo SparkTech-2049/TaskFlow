@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { db } from '@/lib/db';
-import { users, tasks, categories, userSettings, accounts, sessions, verificationTokens } from '@/lib/db/schema';
+import { users, tasks, categories, userSettings, accounts, bannedIps } from '@/lib/db/schema';
 
 describe('Drizzle Schema 数据库结构 (PRD §5)', () => {
   describe('users 表 (PRD §5.1)', () => {
@@ -10,7 +9,6 @@ describe('Drizzle Schema 数据库结构 (PRD §5)', () => {
       expect(columns).toContain('username');
       expect(columns).toContain('email');
       expect(columns).toContain('passwordHash');
-      expect(columns).toContain('githubId');
       expect(columns).toContain('avatarUrl');
       expect(columns).toContain('skin');
       expect(columns).toContain('createdAt');
@@ -58,27 +56,23 @@ describe('Drizzle Schema 数据库结构 (PRD §5)', () => {
     });
   });
 
-  describe('NextAuth 表', () => {
-    it('应包含 accounts 表', () => {
+  describe('bannedIps 表', () => {
+    it('应包含 IP 封禁所需字段', () => {
+      const columns = Object.keys(bannedIps);
+      expect(columns).toContain('id');
+      expect(columns).toContain('ip');
+      expect(columns).toContain('reason');
+      expect(columns).toContain('createdAt');
+    });
+  });
+
+  describe('accounts 表', () => {
+    it('应包含 OAuth 账号关联字段', () => {
       const columns = Object.keys(accounts);
       expect(columns).toContain('userId');
       expect(columns).toContain('type');
       expect(columns).toContain('provider');
       expect(columns).toContain('providerAccountId');
-    });
-
-    it('应包含 sessions 表', () => {
-      const columns = Object.keys(sessions);
-      expect(columns).toContain('sessionToken');
-      expect(columns).toContain('userId');
-      expect(columns).toContain('expires');
-    });
-
-    it('应包含 verificationTokens 表', () => {
-      const columns = Object.keys(verificationTokens);
-      expect(columns).toContain('identifier');
-      expect(columns).toContain('token');
-      expect(columns).toContain('expires');
     });
   });
 });

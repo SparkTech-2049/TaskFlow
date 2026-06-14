@@ -1,86 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { passwordSchema, registerSchema, loginSchema, createTaskSchema } from '@/lib/utils/schemas';
-
-describe('密码强度校验 (PRD §8.3)', () => {
-  it('8位以上大小写字母+数字+特殊符号应通过', () => {
-    expect(passwordSchema.safeParse('Abc123!@').success).toBe(true);
-    expect(passwordSchema.safeParse('Test@1234').success).toBe(true);
-    expect(passwordSchema.safeParse('P@ssw0rd!').success).toBe(true);
-  });
-
-  it('少于8位应拒绝', () => {
-    expect(passwordSchema.safeParse('Ab1!').success).toBe(false);
-    expect(passwordSchema.safeParse('A1!b2@c').success).toBe(false);
-  });
-
-  it('缺少小写字母应拒绝', () => {
-    expect(passwordSchema.safeParse('ABC123!@').success).toBe(false);
-  });
-
-  it('缺少大写字母应拒绝', () => {
-    expect(passwordSchema.safeParse('abc123!@').success).toBe(false);
-  });
-
-  it('缺少数字应拒绝', () => {
-    expect(passwordSchema.safeParse('Abcdef!@').success).toBe(false);
-  });
-
-  it('缺少特殊符号应拒绝', () => {
-    expect(passwordSchema.safeParse('Abc12345').success).toBe(false);
-  });
-
-  it('纯数字应拒绝', () => {
-    expect(passwordSchema.safeParse('12345678').success).toBe(false);
-  });
-
-  it('纯字母应拒绝', () => {
-    expect(passwordSchema.safeParse('Abcdefgh').success).toBe(false);
-  });
-});
-
-describe('注册表单校验 (PRD §3.8 ML-01~04)', () => {
-  it('合法注册数据应通过', () => {
-    const result = registerSchema.safeParse({
-      username: 'testuser',
-      email: 'test@example.com',
-      password: 'Test@1234',
-      confirmPassword: 'Test@1234',
-    });
-    expect(result.success).toBe(true);
-  });
-
-  it('用户名少于2位应拒绝', () => {
-    const result = registerSchema.safeParse({
-      username: 'a',
-      password: 'Test@1234',
-      confirmPassword: 'Test@1234',
-    });
-    expect(result.success).toBe(false);
-  });
-
-  it('两次密码不一致应拒绝', () => {
-    const result = registerSchema.safeParse({
-      username: 'testuser',
-      password: 'Test@1234',
-      confirmPassword: 'Test@5678',
-    });
-    expect(result.success).toBe(false);
-  });
-
-  it('邮箱可选', () => {
-    const result = registerSchema.safeParse({
-      username: 'testuser',
-      email: '',
-      password: 'Test@1234',
-      confirmPassword: 'Test@1234',
-    });
-    expect(result.success).toBe(true);
-  });
-});
+import { loginSchema, createTaskSchema } from '@/lib/utils/schemas';
 
 describe('登录表单校验', () => {
   it('合法登录数据应通过', () => {
-    expect(loginSchema.safeParse({ username: 'admin', password: 'any' }).success).toBe(true);
+    expect(loginSchema.safeParse({ username: 'admin_taskflow', password: 'Task@Flow2026' }).success).toBe(true);
   });
 
   it('用户名为空应拒绝', () => {
@@ -88,7 +11,7 @@ describe('登录表单校验', () => {
   });
 
   it('密码为空应拒绝', () => {
-    expect(loginSchema.safeParse({ username: 'admin', password: '' }).success).toBe(false);
+    expect(loginSchema.safeParse({ username: 'admin_taskflow', password: '' }).success).toBe(false);
   });
 });
 

@@ -3,22 +3,25 @@
 import { useState, useMemo } from 'react';
 import {
   DndContext, DragOverlay, closestCenter, PointerSensor, useSensor, useSensors,
-  type DragStartEvent, type DragEndEvent, type DragOverEvent,
+  useDraggable, useDroppable,
+  type DragStartEvent, type DragEndEvent,
 } from '@dnd-kit/core';
-import { useDraggable, useDroppable } from '@dnd-kit/core';
 import {
   ChevronLeft, ChevronRight, Circle, CheckCircle2, Infinity, Clock, GripVertical,
 } from 'lucide-react';
 import { useTaskStore } from '@/lib/stores/task-store';
 import { useSettingsStore } from '@/lib/stores/settings-store';
 import { getCrossMonthType, getCrossPeriodProgress } from '@/lib/utils/cross-month';
+import { QUADRANT_COLORS, CROSS_MONTH_COLORS } from '@/lib/constants';
+import { PRIORITY_COLORS } from '@/components/shared/constants';
+import { useMonthNav } from '@/components/shared/use-month-nav';
 import { cn } from '@/lib/utils/cn';
 
 const QUADRANTS = [
-  { key: 'urgent_important', label: '重要紧急', bg: '#E53E3E06', border: '#E53E3E20', titleColor: '#E53E3E', priorityLevel: 'urgent_important' },
-  { key: 'important', label: '重要不紧急', bg: '#FFC10706', border: '#FFC10720', titleColor: '#FFC107', priorityLevel: 'important' },
-  { key: 'urgent', label: '紧急不重要', bg: '#ED893606', border: '#ED893620', titleColor: '#ED8936', priorityLevel: 'urgent' },
-  { key: 'normal', label: '不重要不紧急', bg: '#2DB87A06', border: '#2DB87A20', titleColor: '#07C160', priorityLevel: 'normal' },
+  { key: 'urgent_important' as const, label: '重要紧急', priorityLevel: 'urgent_important' as const },
+  { key: 'important' as const, label: '重要不紧急', priorityLevel: 'important' as const },
+  { key: 'urgent' as const, label: '紧急不重要', priorityLevel: 'urgent' as const },
+  { key: 'normal' as const, label: '不重要不紧急', priorityLevel: 'normal' as const },
 ] as const;
 
 function getQuadrantIndex(priorityLevel: string): number {
@@ -31,33 +34,14 @@ function getQuadrantIndex(priorityLevel: string): number {
   }
 }
 
-const PRIORITY_COLORS: Record<string, string> = {
-  urgent_important: '#E53E3E',
-  important: '#ED8936',
-  urgent: '#3B6EF6',
-  normal: '#2DB87A',
-};
-
 type SegmentType = 'overdue' | 'longterm' | 'cross_period' | 'normal';
 
 const SEGMENT_STYLES: Record<SegmentType, { bg: string; border: string; label: string; labelColor: string }> = {
-  overdue: { bg: '#E53E3E06', border: '#E53E3E20', label: '逾期', labelColor: '#E53E3E' },
-  longterm: { bg: '#8B6CFF06', border: '#8B6CFF20', label: '长期', labelColor: '#8B6CFF' },
-  cross_period: { bg: '#3B6EF606', border: '#3B6EF620', label: '跨期', labelColor: '#3B6EF6' },
+  overdue: { bg: CROSS_MONTH_COLORS.overdue.bg, border: CROSS_MONTH_COLORS.overdue.border, label: '逾期', labelColor: CROSS_MONTH_COLORS.overdue.text },
+  longterm: { bg: CROSS_MONTH_COLORS.longterm.bg, border: CROSS_MONTH_COLORS.longterm.border, label: '长期', labelColor: CROSS_MONTH_COLORS.longterm.text },
+  cross_period: { bg: CROSS_MONTH_COLORS.cross_period.bg, border: CROSS_MONTH_COLORS.cross_period.border, label: '跨期', labelColor: CROSS_MONTH_COLORS.cross_period.text },
   normal: { bg: 'transparent', border: 'transparent', label: '', labelColor: '' },
 };
-
-function useMonthNav() {
-  const now = new Date();
-  const [year, setYear] = useState(now.getFullYear());
-  const [month, setMonth] = useState(now.getMonth());
-  const label = `${year}年${month + 1}月`;
-  const goPrev = () => { if (month === 0) { setYear((y) => y - 1); setMonth(11); } else setMonth((m) => m - 1); };
-  const goNext = () => { if (month === 11) { setYear((y) => y + 1); setMonth(0); } else setMonth((m) => m + 1); };
-  const currentMonthDate = new Date(year, month, 1);
-  const monthKey = `${year}-${String(month + 1).padStart(2, '0')}`;
-  return { label, goPrev, goNext, currentMonthDate, monthKey };
-}
 
 function DraggableTaskRow({ task }: { task: ReturnType<typeof useTaskStore.getState>['tasks'][number] }) {
   const toggleDone = useTaskStore((s) => s.updateTask);
@@ -93,15 +77,16 @@ function DraggableTaskRow({ task }: { task: ReturnType<typeof useTaskStore.getSt
 
 function DroppableQuadrant({ quadrant, children }: { quadrant: typeof QUADRANTS[number]; children: React.ReactNode }) {
   const { setNodeRef, isOver } = useDroppable({ id: quadrant.key });
+  const colors = QUADRANT_COLORS[quadrant.key];
 
   return (
     <div
       ref={setNodeRef}
       className={cn('rounded-2xl p-2.5 space-y-2 overflow-hidden transition-all flex flex-col min-h-0', isOver && 'ring-2 ring-offset-1')}
       style={{
-        backgroundColor: quadrant.bg,
-        border: `1px solid ${quadrant.border}`,
-        ...(isOver ? { ringColor: quadrant.titleColor, boxShadow: `0 0 12px ${quadrant.titleColor}30` } : {}),
+        backgroundColor: colors.bg,
+        border: `1px solid ${colors.border}`,
+        ...(isOver ? { ringColor: colors.title, boxShadow: `0 0 12px ${colors.title}30` } : {}),
       }}
     >
       {children}
@@ -131,7 +116,7 @@ export default function MobileQuadrantPage() {
     active.forEach((t) => {
       const qi = getQuadrantIndex(t.priorityLevel);
       const type = getCrossMonthType(
-        { longterm: t.longterm, done: t.done, deadline: t.deadline, start_date: t.startDate, end_date: t.endDate },
+        { longterm: t.longterm, done: t.done, deadline: t.deadline, startDate: t.startDate, endDate: t.endDate },
         currentMonthDate
       ) as SegmentType;
       buckets[qi][type].push(t);
@@ -141,10 +126,6 @@ export default function MobileQuadrantPage() {
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(String(event.active.id));
-  };
-
-  const handleDragOver = (event: DragOverEvent) => {
-    // visual feedback handled by isOver in DroppableQuadrant
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -210,18 +191,19 @@ export default function MobileQuadrantPage() {
           </div>
         </div>
 
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
           <div className="grid grid-cols-2 grid-rows-2 gap-2 flex-1 min-h-0 mt-3">
             {QUADRANTS.map((q, qi) => {
               const data = quadrantData[qi];
               const totalTasks = data.overdue.length + data.longterm.length + data.cross_period.length + data.normal.length;
+              const colors = QUADRANT_COLORS[q.key];
 
               return (
                 <DroppableQuadrant key={q.key} quadrant={q}>
                   <div className="flex items-center justify-between shrink-0">
-                    <span className="text-[10px] font-bold" style={{ color: q.titleColor }}>{q.label}</span>
+                    <span className="text-[10px] font-bold" style={{ color: colors.title }}>{q.label}</span>
                     <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-md"
-                      style={{ backgroundColor: `${q.titleColor}15`, color: q.titleColor }}>
+                      style={{ backgroundColor: `${colors.title}15`, color: colors.title }}>
                       {totalTasks}
                     </span>
                   </div>

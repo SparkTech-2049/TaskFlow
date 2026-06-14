@@ -4,7 +4,7 @@ import { Suspense, useEffect } from 'react';
 import { Sidebar } from '@/components/desktop/sidebar';
 import { TopBar } from '@/components/desktop/topbar';
 import { ReminderScheduler } from '@/components/reminder-scheduler';
-import { useSettingsStore } from '@/lib/stores/settings-store';
+import { useSettingsStore, applySkin, applyFontSize } from '@/lib/stores/settings-store';
 import { useTaskStore } from '@/lib/stores/task-store';
 
 function DataInitializer() {
@@ -24,7 +24,12 @@ export default function DesktopLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { skin } = useSettingsStore();
+  const { skin, fontSize } = useSettingsStore();
+
+  useEffect(() => {
+    applySkin(skin);
+    applyFontSize(fontSize);
+  }, [skin, fontSize]);
 
   return (
     <div className="flex h-screen overflow-hidden bg-bg-canvas" data-skin={skin}>

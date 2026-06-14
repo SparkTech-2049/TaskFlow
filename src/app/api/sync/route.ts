@@ -2,11 +2,11 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { tasks } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
-import { auth } from '@/lib/auth/config';
+import { getAuthUserId } from '@/lib/auth/api-auth';
 
 export async function POST(request: Request) {
-  const session = await auth();
-  const userId = Number(session?.user?.id) || 1;
+  const userId = await getAuthUserId();
+  if (userId instanceof NextResponse) return userId;
 
   const body = await request.json();
   const clientTasks = body.tasks as Record<string, unknown>[];
@@ -72,7 +72,9 @@ export async function POST(request: Request) {
   }
 
   for (const { id, data } of toUpdate) {
-    await db.update(tasks).set(data).where(eq(tasks.id, id));
+    await db.update(tasks).set(data).where(
+      and(eq(tasks.id, id), eq(tasks.userId, userId))
+    );
     updated++;
   }
 

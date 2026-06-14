@@ -2,14 +2,14 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { tasks } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
-import { auth } from '@/lib/auth/config';
+import { getAuthUserId } from '@/lib/auth/api-auth';
 
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth();
-  const userId = Number(session?.user?.id) || 1;
+  const userId = await getAuthUserId();
+  if (userId instanceof NextResponse) return userId;
 
   const { id } = await params;
   const taskId = Number(id);
@@ -30,8 +30,8 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth();
-  const userId = Number(session?.user?.id) || 1;
+  const userId = await getAuthUserId();
+  if (userId instanceof NextResponse) return userId;
 
   const { id } = await params;
   const taskId = Number(id);

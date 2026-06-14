@@ -57,7 +57,7 @@ function DroppableQuadrant({ quadrantKey, children }: { quadrantKey: string; chi
 }
 
 export default function DesktopQuadrantPage() {
-  const { tasks, setTasks, updateTask, deleteTask } = useTaskStore();
+  const { tasks, updateTask } = useTaskStore();
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth());
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -85,7 +85,7 @@ export default function DesktopQuadrantPage() {
         : 'normal';
 
       const cmType = getCrossMonthType(
-        { longterm: task.longterm, done: task.done, deadline: task.deadline, start_date: task.startDate, end_date: task.endDate },
+        { longterm: task.longterm, done: task.done, deadline: task.deadline, startDate: task.startDate, endDate: task.endDate },
         currentMonthDate
       );
 
@@ -104,7 +104,7 @@ export default function DesktopQuadrantPage() {
       <div className="mb-1 rounded-lg px-2 py-1" style={{ backgroundColor: color.bg, borderLeft: `2px solid ${color.text}` }}>
         {tasks.map((task) => (
           <div key={task.id} className="flex items-center gap-1">
-            <DraggableTask task={task} onToggleDone={(id) => updateTask(id, { done: true })} />
+            <DraggableTask task={task} onToggleDone={(id) => updateTask(id, { done: !tasks.find(t => t.id === id)?.done })} />
             {type === 'overdue' && task.deadline && (
               <span className="shrink-0 text-[9px]" style={{ color: color.text }}>逾期{getOverdueDays(task.deadline)}天</span>
             )}
@@ -177,7 +177,7 @@ export default function DesktopQuadrantPage() {
                     {renderSegment(q.longterm, 'longterm', CROSS_MONTH_COLORS.longterm)}
                     {renderSegment(q.crossPeriod, 'crossPeriod', CROSS_MONTH_COLORS.cross_period)}
                     {q.normal.map((task) => (
-                      <DraggableTask key={task.id} task={task} onToggleDone={(id) => updateTask(id, { done: true })} />
+                      <DraggableTask key={task.id} task={task} onToggleDone={(id) => updateTask(id, { done: !tasks.find(t => t.id === id)?.done })} />
                     ))}
                     {total === 0 && (
                       <div className="flex h-16 items-center justify-center text-[12px] text-text-muted">暂无任务</div>

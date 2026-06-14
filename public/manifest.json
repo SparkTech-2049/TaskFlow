@@ -1,0 +1,21 @@
+{
+  "name": "TaskFlow - 个人任务管理",
+  "short_name": "TaskFlow",
+  "description": "通过日历/清单/四象限三种视图管理待办事项",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#3B6EF6",
+  "background_color": "#F8FAFC",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

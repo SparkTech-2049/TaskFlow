@@ -1,0 +1,105 @@
+@import "tailwindcss";
+
+:root {
+  --bg-canvas: #F8FAFC;
+  --bg-card: #FFFFFF;
+  --bg-elevated: #EEF1F6;
+  --bg-surface: #FFFFFF;
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+  --border-micro: #E2E8F0;
+  --accent-blue: #3B6EF6;
+  --accent-indigo: #5B5EF0;
+  --accent-cyan: #0BBFD9;
+  --cta-orange: #F97316;
+  --priority-urgent: #E53E3E;
+  --priority-important: #ED8936;
+  --priority-normal: #2DB87A;
+  --cat-project: #2B8CED;
+  --cat-other: #8B6FC0;
+  --cat-credit: #E5534D;
+  --cat-study: #7C4DFF;
+  --gradient-brand-from: #3B82F6;
+  --gradient-brand-to: #6366F1;
+  --glass-blur: 20px;
+  --glass-border: rgba(255, 255, 255, 0.6);
+  --glass-shadow: 0 10px 30px rgba(91, 111, 246, 0.08);
+}
+
+[data-skin="neon"] {
+  --bg-canvas: #050508;
+  --bg-card: #0E0E14;
+  --bg-elevated: #12121A;
+  --bg-surface: #0A0A0F;
+  --text-primary: #EDEDEF;
+  --text-secondary: #8A8F98;
+  --text-muted: #555862;
+  --border-micro: rgba(255, 255, 255, 0.06);
+}
+
+[data-skin="huawei"] {
+  --accent-blue: #CF0A2C;
+  --gradient-brand-from: #CF0A2C;
+  --gradient-brand-to: #E63E30;
+}
+
+@theme inline {
+  --color-bg-canvas: var(--bg-canvas);
+  --color-bg-card: var(--bg-card);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-bg-surface: var(--bg-surface);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-border-micro: var(--border-micro);
+  --color-accent-blue: var(--accent-blue);
+  --color-accent-indigo: var(--accent-indigo);
+  --color-accent-cyan: var(--accent-cyan);
+  --color-cta-orange: var(--cta-orange);
+  --color-priority-urgent: var(--priority-urgent);
+  --color-priority-important: var(--priority-important);
+  --color-priority-normal: var(--priority-normal);
+  --color-cat-project: var(--cat-project);
+  --color-cat-other: var(--cat-other);
+  --color-cat-credit: var(--cat-credit);
+  --color-cat-study: var(--cat-study);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: 24px;
+}
+
+[data-skin="neon"] .glass-panel {
+  background: rgba(14, 14, 20, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.gradient-brand {
+  background: linear-gradient(
+    135deg,
+    var(--gradient-brand-from),
+    var(--gradient-brand-to)
+  );
+}
+
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}

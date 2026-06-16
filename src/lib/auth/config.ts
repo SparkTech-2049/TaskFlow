@@ -7,6 +7,7 @@ function createAuthConfig() {
   const hasDb = !!process.env.POSTGRES_URL;
 
   return {
+    trustHost: true,
     ...(hasDb ? (() => {
       const { getDb } = require('@/lib/db');
       return { adapter: DrizzleAdapter(getDb()) };

@@ -10,11 +10,11 @@ import { exportJSON, exportCSV, exportICS } from '@/lib/utils/export';
 import {
   Type, Palette, SortAsc,
   Trash2, Download, CalendarPlus, Tag, Bell, Plus,
-  Zap, CircleDot, Monitor, Check, X, LogOut
+  Zap, CircleDot, Monitor, Check, X, LogOut, TreePine, Sun, Brush
 } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 
-type SettingsSection = 'appearance' | 'skin' | 'task' | 'data' | 'category' | 'notification';
+type SettingsSection = 'appearance' | 'skin' | 'task' | 'data' | 'category' | 'notification' | 'logout';
 
 const sections: { key: SettingsSection; label: string; icon: typeof Type }[] = [
   { key: 'appearance', label: '外观', icon: Type },
@@ -23,6 +23,7 @@ const sections: { key: SettingsSection; label: string; icon: typeof Type }[] = [
   { key: 'data', label: '数据管理', icon: Download },
   { key: 'category', label: '分类管理', icon: Tag },
   { key: 'notification', label: '通知推送', icon: Bell },
+  { key: 'logout', label: '退出登录', icon: LogOut },
 ];
 
 function Toggle({ value, onChange }: { value: boolean; onChange: (v: boolean) => void }) {
@@ -237,6 +238,9 @@ export default function DesktopSettingsPage() {
                 { id: 'default' as const, label: '默认', desc: '清新蓝紫，经典风格', icon: Monitor },
                 { id: 'neon' as const, label: '霓虹', desc: '深色霓虹，科技感', icon: Zap },
                 { id: 'huawei' as const, label: '华为', desc: '华为红，品牌风格', icon: CircleDot },
+                { id: 'forest' as const, label: '森林', desc: '温润绿意，自然专注', icon: TreePine },
+                { id: 'sunset' as const, label: '日落', desc: '暖橙治愈，活力温暖', icon: Sun },
+                { id: 'ink' as const, label: '水墨', desc: '墨底朱砂，高级克制', icon: Brush },
               ].map((s) => {
                 const Icon = s.icon;
                 const active = skin === s.id;
@@ -439,15 +443,20 @@ export default function DesktopSettingsPage() {
             >
               {barkTestStatus === 'sending' ? '发送中...' : barkTestStatus === 'success' ? '发送成功' : barkTestStatus === 'error' ? '发送失败' : '测试推送'}
             </button>
-            <div className="border-t border-border-micro pt-5">
-              <button
-                onClick={() => signOut({ callbackUrl: '/d/login' })}
-                className="flex items-center gap-2 rounded-xl border border-priority-urgent/20 bg-priority-urgent/5 px-4 py-2.5 text-sm font-medium text-priority-urgent hover:bg-priority-urgent/10 transition-colors"
-              >
-                <LogOut className="h-4 w-4" />
-                退出登录
-              </button>
-            </div>
+          </div>
+        )}
+
+        {activeSection === 'logout' && (
+          <div className="flex flex-col gap-5">
+            <h3 className="text-base font-semibold text-text-primary">退出登录</h3>
+            <p className="text-sm text-text-secondary">退出当前账号，返回登录页面。</p>
+            <button
+              onClick={() => signOut({ callbackUrl: '/d/login' })}
+              className="flex items-center gap-2 rounded-xl border border-priority-urgent/20 bg-priority-urgent/5 px-4 py-2.5 text-sm font-medium text-priority-urgent hover:bg-priority-urgent/10 transition-colors w-fit"
+            >
+              <LogOut className="h-4 w-4" />
+              退出登录
+            </button>
           </div>
         )}
       </div>

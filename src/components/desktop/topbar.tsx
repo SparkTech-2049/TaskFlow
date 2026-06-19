@@ -1,38 +1,43 @@
-﻿'use client';
+'use client';
 
 import { useSettingsStore } from '@/lib/stores/settings-store';
-import { Zap, CircleDot, User } from 'lucide-react';
+import { Palette, User } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
+
+const SKIN_ORDER = ['default', 'neon', 'huawei', 'forest', 'sunset', 'ink'] as const;
+const SKIN_LABELS: Record<string, string> = {
+  default: '默认',
+  neon: '霓虹',
+  huawei: '华为',
+  forest: '森林',
+  sunset: '日落',
+  ink: '水墨',
+};
 
 export function TopBar() {
   const { skin, setSkin } = useSettingsStore();
+
+  const cycleSkin = () => {
+    const idx = SKIN_ORDER.indexOf(skin as typeof SKIN_ORDER[number]);
+    const next = SKIN_ORDER[(idx + 1) % SKIN_ORDER.length];
+    setSkin(next);
+  };
 
   return (
     <header className="flex h-14 shrink-0 items-center justify-end border-b border-border-micro bg-bg-surface px-6">
       <div className="flex items-center gap-3">
         <button
-          onClick={() => setSkin(skin === 'neon' ? 'default' : 'neon')}
-          title="霓虹皮肤"
+          onClick={cycleSkin}
+          title={`当前：${SKIN_LABELS[skin] || skin}，点击切换`}
           className={cn(
-            'flex h-8 w-8 items-center justify-center rounded-lg border transition-colors',
-            skin === 'neon'
-              ? 'border-[1.5px] border-accent-indigo text-accent-indigo bg-bg-elevated'
-              : 'border border-border-micro text-text-muted bg-bg-surface hover:text-text-secondary'
+            'flex h-8 items-center gap-1.5 rounded-lg border px-2.5 transition-colors text-xs font-medium',
+            skin !== 'default'
+              ? 'border-accent-blue text-accent-blue bg-accent-blue/5'
+              : 'border-border-micro text-text-muted bg-bg-surface hover:text-text-secondary'
           )}
         >
-          <Zap className="h-4 w-4" />
-        </button>
-        <button
-          onClick={() => setSkin(skin === 'huawei' ? 'default' : 'huawei')}
-          title="华为皮肤"
-          className={cn(
-            'flex h-8 w-8 items-center justify-center rounded-lg border transition-colors',
-            skin === 'huawei'
-              ? 'border-[1.5px] border-priority-urgent text-priority-urgent bg-bg-elevated'
-              : 'border border-border-micro text-text-muted bg-bg-surface hover:text-text-secondary'
-          )}
-        >
-          <CircleDot className="h-4 w-4" />
+          <Palette className="h-3.5 w-3.5" />
+          {SKIN_LABELS[skin] || '默认'}
         </button>
 
         <div className="flex h-8 w-8 items-center justify-center rounded-full gradient-brand text-xs font-bold text-white">

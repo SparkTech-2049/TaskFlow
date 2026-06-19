@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import {
   Type, Eye, EyeOff, FolderOpen, Trash2, Download, CalendarPlus,
-  Plus, X, Bell, Palette, ArrowLeftRight, Check, Send, Edit3, LogOut,
+  Plus, X, Bell, Palette, ArrowLeftRight, Check, Send, Edit3, LogOut, TreePine, Sun, Brush, Monitor, Zap,
 } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import { useSettingsStore } from '@/lib/stores/settings-store';
@@ -206,18 +206,26 @@ export default function MobileSettingsPage() {
             <ArrowLeftRight size={14} className="text-accent-indigo" />
             <span className="text-sm font-semibold text-text-primary">皮肤切换</span>
           </div>
-          <div className="flex gap-2">
-            <button onClick={() => setSkin('neon')}
-              className={cn('flex-1 h-9 rounded-xl text-xs font-medium transition-colors',
-                skin === 'neon' ? 'gradient-brand text-white shadow-md shadow-accent-blue/20' : 'bg-bg-elevated text-text-secondary border border-border-micro')}>
-              🌙 霓虹
-            </button>
-            <button onClick={() => setSkin('huawei')}
-              className={cn('flex-1 h-9 rounded-xl text-xs font-medium transition-colors',
-                skin === 'huawei' ? 'gradient-brand text-white shadow-md shadow-accent-blue/20' : 'bg-bg-elevated text-text-secondary border border-border-micro')}>
-              🔴 华为
-            </button>
-          </div>
+          <div className="grid grid-cols-3 gap-2">
+              {([
+                { id: 'default' as const, label: '默认', icon: Monitor },
+                { id: 'neon' as const, label: '霓虹', icon: Zap },
+                { id: 'huawei' as const, label: '华为', icon: Palette },
+                { id: 'forest' as const, label: '森林', icon: TreePine },
+                { id: 'sunset' as const, label: '日落', icon: Sun },
+                { id: 'ink' as const, label: '水墨', icon: Brush },
+              ] as const).map((s) => {
+                const Icon = s.icon;
+                return (
+                  <button key={s.id} onClick={() => setSkin(s.id)}
+                    className={cn('flex flex-col items-center gap-1 h-14 rounded-xl text-xs font-medium transition-colors',
+                      skin === s.id ? 'gradient-brand text-white shadow-md shadow-accent-blue/20' : 'bg-bg-elevated text-text-secondary border border-border-micro')}>
+                    <Icon size={16} />
+                    <span>{s.label}</span>
+                  </button>
+                );
+              })}
+            </div>
         </div>
 
         {/* 任务管理 */}
@@ -404,15 +412,17 @@ export default function MobileSettingsPage() {
                '测试推送'}
             </button>
           </div>
-          <div className="border-t border-border-micro pt-3">
-            <button
-              onClick={() => signOut({ callbackUrl: '/m/login' })}
-              className="w-full h-10 rounded-xl border border-priority-urgent/20 bg-priority-urgent/5 text-sm font-medium text-priority-urgent flex items-center justify-center gap-2 active:bg-priority-urgent/10 transition-colors"
-            >
-              <LogOut size={15} />
-              退出登录
-            </button>
-          </div>
+        </div>
+
+        {/* 退出登录 */}
+        <div className="glass-panel p-3">
+          <button
+            onClick={() => signOut({ callbackUrl: '/m/login' })}
+            className="w-full h-10 rounded-xl border border-priority-urgent/20 bg-priority-urgent/5 text-sm font-medium text-priority-urgent flex items-center justify-center gap-2 active:bg-priority-urgent/10 transition-colors"
+          >
+            <LogOut size={15} />
+            退出登录
+          </button>
         </div>
       </div>
     </div>

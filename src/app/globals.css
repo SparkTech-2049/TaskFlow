@@ -45,6 +45,78 @@
   --gradient-brand-to: #E63E30;
 }
 
+[data-skin="forest"] {
+  --bg-canvas: #FAF6F0;
+  --bg-card: #FFFFFF;
+  --bg-elevated: #F0EBE3;
+  --bg-surface: #FFFFFF;
+  --text-primary: #1B4332;
+  --text-secondary: #52796F;
+  --text-muted: #8FAE9B;
+  --border-micro: #D8CFC4;
+  --accent-blue: #2D6A4F;
+  --accent-indigo: #40916C;
+  --accent-cyan: #52B788;
+  --cta-orange: #D4A373;
+  --gradient-brand-from: #2D6A4F;
+  --gradient-brand-to: #52B788;
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-shadow: 0 10px 30px rgba(45, 106, 79, 0.08);
+}
+
+[data-skin="sunset"] {
+  --bg-canvas: #FFF8F0;
+  --bg-card: #FFFFFF;
+  --bg-elevated: #F5EDE4;
+  --bg-surface: #FFFFFF;
+  --text-primary: #3D2C2E;
+  --text-secondary: #7A5C5E;
+  --text-muted: #B39A9C;
+  --border-micro: #E8D5CE;
+  --accent-blue: #E07A5F;
+  --accent-indigo: #F2A285;
+  --accent-cyan: #F4C597;
+  --cta-orange: #E76F51;
+  --gradient-brand-from: #E07A5F;
+  --gradient-brand-to: #F4A261;
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-shadow: 0 10px 30px rgba(224, 122, 95, 0.08);
+}
+
+[data-skin="ink"] {
+  --bg-canvas: #0F0F17;
+  --bg-card: #1A1A2E;
+  --bg-elevated: #22223B;
+  --bg-surface: #16162A;
+  --text-primary: #E8E6E3;
+  --text-secondary: #9A9CAB;
+  --text-muted: #5C5E6E;
+  --border-micro: rgba(255, 255, 255, 0.08);
+  --accent-blue: #C04A1A;
+  --accent-indigo: #D4654A;
+  --accent-cyan: #8D99AE;
+  --cta-orange: #C04A1A;
+  --gradient-brand-from: #C04A1A;
+  --gradient-brand-to: #D4654A;
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --glass-shadow: 0 10px 30px rgba(192, 74, 26, 0.08);
+}
+
+[data-skin="forest"] .glass-panel {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(45, 106, 79, 0.1);
+}
+
+[data-skin="sunset"] .glass-panel {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(224, 122, 95, 0.1);
+}
+
+[data-skin="ink"] .glass-panel {
+  background: rgba(26, 26, 46, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
 @theme inline {
   --color-bg-canvas: var(--bg-canvas);
   --color-bg-card: var(--bg-card);

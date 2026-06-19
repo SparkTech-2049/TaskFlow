@@ -1,30 +1,30 @@
 @import "tailwindcss";
 
 :root {
-  --bg-canvas: #F8FAFC;
+  --bg-canvas: #F5F5F7;
   --bg-card: #FFFFFF;
-  --bg-elevated: #EEF1F6;
+  --bg-elevated: #EEEEF0;
   --bg-surface: #FFFFFF;
-  --text-primary: #0F172A;
-  --text-secondary: #475569;
-  --text-muted: #94A3B8;
-  --border-micro: #E2E8F0;
-  --accent-blue: #3B6EF6;
-  --accent-indigo: #5B5EF0;
-  --accent-cyan: #0BBFD9;
-  --cta-orange: #F97316;
-  --priority-urgent: #E53E3E;
-  --priority-important: #FFC107;
-  --priority-normal: #2DB87A;
-  --cat-project: #2B8CED;
-  --cat-other: #8B6FC0;
-  --cat-credit: #E5534D;
-  --cat-study: #7C4DFF;
-  --gradient-brand-from: #3B82F6;
-  --gradient-brand-to: #6366F1;
+  --text-primary: #1D1D1F;
+  --text-secondary: #6E6E73;
+  --text-muted: #AEAEB2;
+  --border-micro: #D2D2D7;
+  --accent-blue: #007AFF;
+  --accent-indigo: #5856D6;
+  --accent-cyan: #5AC8FA;
+  --cta-orange: #FF9500;
+  --priority-urgent: #FF3B30;
+  --priority-important: #FF9500;
+  --priority-normal: #34C759;
+  --cat-project: #007AFF;
+  --cat-other: #AF52DE;
+  --cat-credit: #FF2D55;
+  --cat-study: #5856D6;
+  --gradient-brand-from: #007AFF;
+  --gradient-brand-to: #5856D6;
   --glass-blur: 20px;
   --glass-border: rgba(255, 255, 255, 0.6);
-  --glass-shadow: 0 10px 30px rgba(91, 111, 246, 0.08);
+  --glass-shadow: 0 2px 12px rgba(0, 0, 0, 0.06), 0 0 1px rgba(0, 0, 0, 0.04);
 }
 
 [data-skin="neon"] {
@@ -99,25 +99,6 @@
   --glass-shadow: 0 10px 30px rgba(45, 106, 79, 0.08);
 }
 
-[data-skin="sunset"] {
-  --bg-canvas: #FFF8F0;
-  --bg-card: #FFFFFF;
-  --bg-elevated: #F5EDE4;
-  --bg-surface: #FFFFFF;
-  --text-primary: #3D2C2E;
-  --text-secondary: #7A5C5E;
-  --text-muted: #B39A9C;
-  --border-micro: #E8D5CE;
-  --accent-blue: #E07A5F;
-  --accent-indigo: #F2A285;
-  --accent-cyan: #F4C597;
-  --cta-orange: #E76F51;
-  --gradient-brand-from: #E07A5F;
-  --gradient-brand-to: #F4A261;
-  --glass-border: rgba(255, 255, 255, 0.5);
-  --glass-shadow: 0 10px 30px rgba(224, 122, 95, 0.08);
-}
-
 [data-skin="forest"] .glass-panel {
   background: rgba(255, 255, 255, 0.6);
   border: 1px solid rgba(45, 106, 79, 0.1);
@@ -144,11 +125,6 @@
   background: radial-gradient(ellipse at center, rgba(255, 214, 194, 0.4) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
-}
-
-[data-skin="sunset"] .glass-panel {
-  background: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(224, 122, 95, 0.1);
 }
 
 @theme inline {

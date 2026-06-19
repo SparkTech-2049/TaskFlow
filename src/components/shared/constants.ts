@@ -8,10 +8,10 @@ export const CAT_NAMES: Record<string, string> = {
 };
 
 export const CAT_COLORS: Record<string, string> = {
-  project: '#2B8CED',
-  other: '#8B6FC0',
-  credit: '#E5534D',
-  study: '#7C4DFF',
+  project: '#007AFF',
+  other: '#AF52DE',
+  credit: '#FF2D55',
+  study: '#5856D6',
 };
 
 export const CAT_BG_CLASSES: Record<string, string> = {
@@ -41,10 +41,10 @@ export const SUB_CAT_NAMES: Record<string, string> = {
 };
 
 export const PRIORITY_COLORS: Record<string, string> = {
-  urgent_important: '#E53E3E',
-  important: '#FFC107',
-  urgent: '#ED8936',
-  normal: '#07C160',
+  urgent_important: '#FF3B30',
+  important: '#FF9500',
+  urgent: '#FF9500',
+  normal: '#34C759',
 };
 
 export const PRIORITY_DOT_CLASSES: Record<string, string> = {

@@ -2,14 +2,14 @@
 
 import { useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Calendar, ListChecks, Grid2X2, Archive, Settings, Zap } from 'lucide-react';
+import { Calendar, List, Grid2X2, Archive, Settings, Zap } from 'lucide-react';
 import { useSettingsStore, applySkin, applyFontSize } from '@/lib/stores/settings-store';
 import { useTaskStore } from '@/lib/stores/task-store';
 import { ReminderScheduler } from '@/components/reminder-scheduler';
 
 const navItems = [
   { key: 'calendar', label: '日历', path: '/m/calendar', Icon: Calendar },
-  { key: 'list', label: '清单', path: '/m/list', Icon: ListChecks },
+  { key: 'list', label: '清单', path: '/m/list', Icon: List },
   { key: 'quadrant', label: '四象限', path: '/m/quadrant', Icon: Grid2X2 },
   { key: 'archive', label: '归档', path: '/m/archive', Icon: Archive },
   { key: 'settings', label: '设置', path: '/m/settings', Icon: Settings },

@@ -3,17 +3,17 @@
 import { usePathname, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import {
-  LayoutGrid, Briefcase, Coffee, Wallet, BookOpen,
+  SquareStack, Briefcase, CircleDot, Banknote, GraduationCap,
   Calendar, List, Grid2X2, Archive, Settings, Zap,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 
 const catItems = [
-  { href: '/d', label: '全部', icon: LayoutGrid, query: '' },
+  { href: '/d', label: '全部', icon: SquareStack, query: '' },
   { href: '/d', label: '工作', icon: Briefcase, query: 'cat=project' },
-  { href: '/d', label: '琐事', icon: Coffee, query: 'cat=other' },
-  { href: '/d', label: '理财', icon: Wallet, query: 'cat=credit' },
-  { href: '/d', label: '学习', icon: BookOpen, query: 'cat=study' },
+  { href: '/d', label: '琐事', icon: CircleDot, query: 'cat=other' },
+  { href: '/d', label: '理财', icon: Banknote, query: 'cat=credit' },
+  { href: '/d', label: '学习', icon: GraduationCap, query: 'cat=study' },
 ];
 
 const viewItems = [

@@ -73,14 +73,8 @@ function getAuth() {
 }
 
 export const handlers = new Proxy({} as ReturnType<typeof NextAuth>['handlers'], {
-  get(_t, prop) { return Reflect.get(getAuth().handlers, prop); },
+  get(_t, prop) { return Reflect.get(getAuth().handlers as unknown as object, prop); },
 });
-export const auth = new Proxy({} as ReturnType<typeof NextAuth>['auth'], {
-  apply(_t, _this, args) { return Reflect.apply(getAuth().auth, getAuth(), args); },
-});
-export const signIn = new Proxy({} as ReturnType<typeof NextAuth>['signIn'], {
-  apply(_t, _this, args) { return Reflect.apply(getAuth().signIn, getAuth(), args); },
-});
-export const signOut = new Proxy({} as ReturnType<typeof NextAuth>['signOut'], {
-  apply(_t, _this, args) { return Reflect.apply(getAuth().signOut, getAuth(), args); },
-});
+export const auth = (...args: unknown[]) => Reflect.apply(getAuth().auth, getAuth(), args);
+export const signIn = (...args: unknown[]) => Reflect.apply(getAuth().signIn, getAuth(), args);
+export const signOut = (...args: unknown[]) => Reflect.apply(getAuth().signOut, getAuth(), args);

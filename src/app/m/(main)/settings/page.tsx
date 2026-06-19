@@ -404,16 +404,15 @@ export default function MobileSettingsPage() {
                '测试推送'}
             </button>
           </div>
-        </div>
-
-        <div className="mt-4 border-t border-border-micro pt-4">
-          <button
-            onClick={() => signOut({ callbackUrl: '/m/login' })}
-            className="w-full h-10 rounded-xl border border-priority-urgent/20 bg-priority-urgent/5 text-sm font-medium text-priority-urgent flex items-center justify-center gap-2 active:bg-priority-urgent/10 transition-colors"
-          >
-            <LogOut size={15} />
-            退出登录
-          </button>
+          <div className="border-t border-border-micro pt-3">
+            <button
+              onClick={() => signOut({ callbackUrl: '/m/login' })}
+              className="w-full h-10 rounded-xl border border-priority-urgent/20 bg-priority-urgent/5 text-sm font-medium text-priority-urgent flex items-center justify-center gap-2 active:bg-priority-urgent/10 transition-colors"
+            >
+              <LogOut size={15} />
+              退出登录
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -28,7 +28,7 @@ export function useCalendar(initialDate?: Date): UseCalendarReturn {
   const today = new Date();
   const [currentYear, setCurrentYear] = useState(initialDate?.getFullYear() ?? today.getFullYear());
   const [currentMonth, setCurrentMonth] = useState(initialDate?.getMonth() ?? today.getMonth());
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<string | null>(formatDate(today));
 
   const monthLabel = useMemo(() => {
     return `${currentYear}年${currentMonth + 1}月`;

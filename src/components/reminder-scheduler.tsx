@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { useTaskStore } from '@/lib/stores/task-store';
 import { useSettingsStore } from '@/lib/stores/settings-store';
+import { CAT_NAMES } from '@/components/shared/constants';
 
 const NOTIFIED_KEY = 'taskflow-notified-reminders';
 const EARLY_MS = 3_000;
@@ -21,12 +22,12 @@ function saveNotifiedSet(set: Set<string>) {
   sessionStorage.setItem(NOTIFIED_KEY, JSON.stringify([...set]));
 }
 
-async function sendBark(webhook: string, title: string, body: string) {
+async function sendBark(webhook: string, title: string, body: string, group?: string) {
   try {
     await fetch(webhook, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, body }),
+      body: JSON.stringify({ title, body, ...(group ? { group } : {}) }),
     });
   } catch {}
 }
@@ -65,7 +66,7 @@ export function ReminderScheduler() {
     const now = Date.now();
     const notified = notifiedRef.current;
 
-    const pending: { id: number; key: string; title: string; remindAt: number }[] = [];
+    const pending: { id: number; key: string; title: string; remindAt: number; cat: string }[] = [];
 
     for (const t of tasks) {
       if (!t.reminder || t.done || t.archived) continue;
@@ -76,7 +77,7 @@ export function ReminderScheduler() {
         if (!notified.has(key)) {
           const diff = remindAt - now;
           if (diff > -LATE_MS && diff < 24 * 3600_000) {
-            pending.push({ id: t.id, key, title: t.title, remindAt });
+            pending.push({ id: t.id, key, title: t.title, remindAt, cat: t.cat });
           }
         }
       }
@@ -88,7 +89,7 @@ export function ReminderScheduler() {
         if (!notified.has(key)) {
           const diff = dailyAt - now;
           if (diff > -LATE_MS && diff < 24 * 3600_000) {
-            pending.push({ id: t.id, key, title: t.title, remindAt: dailyAt });
+            pending.push({ id: t.id, key, title: t.title, remindAt: dailyAt, cat: t.cat });
           }
         }
       }
@@ -100,7 +101,8 @@ export function ReminderScheduler() {
         if (notifiedRef.current.has(p.key)) return;
         notifiedRef.current.add(p.key);
         saveNotifiedSet(notifiedRef.current);
-        sendBark(barkWebhook, 'TaskFlow 提醒', `「${p.title}」已到期！`);
+        const groupName = CAT_NAMES[p.cat] || p.cat;
+        sendBark(barkWebhook, 'TaskFlow 提醒', `「${p.title}」已到期！`, groupName);
       }, delay);
       timersRef.current.push(timer);
     }

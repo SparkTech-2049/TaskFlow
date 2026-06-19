@@ -439,18 +439,17 @@ export default function DesktopSettingsPage() {
             >
               {barkTestStatus === 'sending' ? '发送中...' : barkTestStatus === 'success' ? '发送成功' : barkTestStatus === 'error' ? '发送失败' : '测试推送'}
             </button>
+            <div className="border-t border-border-micro pt-5">
+              <button
+                onClick={() => signOut({ callbackUrl: '/d/login' })}
+                className="flex items-center gap-2 rounded-xl border border-priority-urgent/20 bg-priority-urgent/5 px-4 py-2.5 text-sm font-medium text-priority-urgent hover:bg-priority-urgent/10 transition-colors"
+              >
+                <LogOut className="h-4 w-4" />
+                退出登录
+              </button>
+            </div>
           </div>
         )}
-
-        <div className="mt-8 border-t border-border-micro pt-5">
-          <button
-            onClick={() => signOut({ callbackUrl: '/d/login' })}
-            className="flex items-center gap-2 rounded-xl border border-priority-urgent/20 bg-priority-urgent/5 px-4 py-2.5 text-sm font-medium text-priority-urgent hover:bg-priority-urgent/10 transition-colors"
-          >
-            <LogOut className="h-4 w-4" />
-            退出登录
-          </button>
-        </div>
       </div>
     </div>
   );

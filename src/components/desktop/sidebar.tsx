@@ -40,6 +40,9 @@ export function Sidebar() {
       }
       return pathname === item.href && currentCat === catValue;
     }
+    if (item.href === '/d') {
+      return pathname === '/d';
+    }
     return pathname === item.href || pathname.startsWith(item.href + '/');
   }
 

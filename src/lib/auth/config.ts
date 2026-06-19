@@ -1,7 +1,13 @@
-import NextAuth from 'next-auth';
+import NextAuth, { type DefaultSession } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { DrizzleAdapter } from '@auth/drizzle-adapter';
 import bcrypt from 'bcryptjs';
+
+declare module 'next-auth' {
+  interface Session {
+    user: { id?: string } & DefaultSession['user'];
+  }
+}
 
 function createAuthConfig() {
   const hasDb = !!process.env.POSTGRES_URL;
@@ -54,6 +60,18 @@ function createAuthConfig() {
       }),
     ],
     session: { strategy: 'jwt' } as const,
+    callbacks: {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      jwt: ({ token, user }: any) => {
+        if (user?.id) token.id = user.id;
+        return token;
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      session: ({ session, token }: any) => {
+        if (token.id) session.user.id = String(token.id);
+        return session;
+      },
+    },
   };
 }
 

@@ -5,34 +5,39 @@ import { eq, and, gte, lt } from 'drizzle-orm';
 import { getAuthUserId } from '@/lib/auth/api-auth';
 
 export async function GET(request: Request) {
-  const userId = await getAuthUserId();
-  if (userId instanceof NextResponse) return userId;
+  try {
+    const userId = await getAuthUserId();
+    if (userId instanceof NextResponse) return userId;
 
-  const { searchParams } = new URL(request.url);
-  const month = searchParams.get('month');
+    const { searchParams } = new URL(request.url);
+    const month = searchParams.get('month');
 
-  let result;
+    let result;
 
-  if (month) {
-    const [year, m] = month.split('-').map(Number);
-    const startDate = `${year}-${String(m).padStart(2, '0')}-01`;
-    const endDate = m === 12
-      ? `${year + 1}-01-01`
-      : `${year}-${String(m + 1).padStart(2, '0')}-01`;
+    if (month) {
+      const [year, m] = month.split('-').map(Number);
+      const startDate = `${year}-${String(m).padStart(2, '0')}-01`;
+      const endDate = m === 12
+        ? `${year + 1}-01-01`
+        : `${year}-${String(m + 1).padStart(2, '0')}-01`;
 
-    result = await db.select().from(tasks).where(
-      and(
-        eq(tasks.userId, userId),
-        eq(tasks.archived, false),
-        gte(tasks.deadline, startDate),
-        lt(tasks.deadline, endDate),
-      )
-    );
-  } else {
-    result = await db.select().from(tasks).where(eq(tasks.userId, userId));
+      result = await db.select().from(tasks).where(
+        and(
+          eq(tasks.userId, userId),
+          eq(tasks.archived, false),
+          gte(tasks.deadline, startDate),
+          lt(tasks.deadline, endDate),
+        )
+      );
+    } else {
+      result = await db.select().from(tasks).where(eq(tasks.userId, userId));
+    }
+
+    return NextResponse.json(result);
+  } catch (error) {
+    console.error('[GET /api/tasks] Error:', error);
+    return NextResponse.json({ error: String(error) }, { status: 500 });
   }
-
-  return NextResponse.json(result);
 }
 
 export async function POST(request: Request) {

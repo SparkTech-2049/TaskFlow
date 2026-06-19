@@ -1,7 +1,7 @@
 ﻿'use client';
 
 import { useSettingsStore } from '@/lib/stores/settings-store';
-import { Zap, CircleDot, Settings, User } from 'lucide-react';
+import { Zap, CircleDot, User } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 
 export function TopBar() {
@@ -33,10 +33,6 @@ export function TopBar() {
           )}
         >
           <CircleDot className="h-4 w-4" />
-        </button>
-
-        <button className="flex h-8 w-8 items-center justify-center rounded-lg text-text-muted hover:bg-bg-elevated hover:text-text-secondary">
-          <Settings className="h-4 w-4" />
         </button>
 
         <div className="flex h-8 w-8 items-center justify-center rounded-full gradient-brand text-xs font-bold text-white">

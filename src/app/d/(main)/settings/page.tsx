@@ -10,8 +10,9 @@ import { exportJSON, exportCSV, exportICS } from '@/lib/utils/export';
 import {
   Type, Palette, SortAsc,
   Trash2, Download, CalendarPlus, Tag, Bell, Plus,
-  Zap, CircleDot, Monitor, Check, X
+  Zap, CircleDot, Monitor, Check, X, LogOut
 } from 'lucide-react';
+import { signOut } from 'next-auth/react';
 
 type SettingsSection = 'appearance' | 'skin' | 'task' | 'data' | 'category' | 'notification';
 
@@ -440,6 +441,16 @@ export default function DesktopSettingsPage() {
             </button>
           </div>
         )}
+
+        <div className="mt-8 border-t border-border-micro pt-5">
+          <button
+            onClick={() => signOut({ callbackUrl: '/d/login' })}
+            className="flex items-center gap-2 rounded-xl border border-priority-urgent/20 bg-priority-urgent/5 px-4 py-2.5 text-sm font-medium text-priority-urgent hover:bg-priority-urgent/10 transition-colors"
+          >
+            <LogOut className="h-4 w-4" />
+            退出登录
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -1,6 +1,5 @@
 import NextAuth, { type DefaultSession } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-import { DrizzleAdapter } from '@auth/drizzle-adapter';
 import bcrypt from 'bcryptjs';
 
 declare module 'next-auth' {
@@ -10,14 +9,8 @@ declare module 'next-auth' {
 }
 
 function createAuthConfig() {
-  const hasDb = !!process.env.POSTGRES_URL;
-
   return {
     trustHost: true,
-    ...(hasDb ? (() => {
-      const { getDb } = require('@/lib/db');
-      return { adapter: DrizzleAdapter(getDb()) };
-    })() : {}),
     providers: [
       Credentials({
         name: 'credentials',
@@ -25,20 +18,20 @@ function createAuthConfig() {
           username: { label: '用户名', type: 'text' },
           password: { label: '密码', type: 'password' },
         },
-        async authorize(credentials: Partial<Record<string, unknown>>, request) {
+        async authorize(credentials) {
           if (!credentials?.username || !credentials?.password) return null;
-
-          const ip = request?.headers?.get?.('x-forwarded-for')
-            || request?.headers?.get?.('x-real-ip')
-            || 'unknown';
 
           const { getDb } = await import('@/lib/db');
           const { users, bannedIps } = await import('@/lib/db/schema');
           const { eq } = await import('drizzle-orm');
           const db = getDb();
 
-          const banned = await db.select().from(bannedIps).where(eq(bannedIps.ip, ip)).limit(1);
-          if (banned.length > 0) return null;
+          const ip = 'unknown';
+
+          try {
+            const banned = await db.select().from(bannedIps).where(eq(bannedIps.ip, ip)).limit(1);
+            if (banned.length > 0) return null;
+          } catch {}
 
           const result = await db
             .select()
@@ -50,10 +43,7 @@ function createAuthConfig() {
           if (!user || !user.passwordHash) return null;
 
           const isValid = await bcrypt.compare(credentials.password as string, user.passwordHash);
-          if (!isValid) {
-            await db.insert(bannedIps).values({ ip, reason: '密码错误' }).onConflictDoNothing();
-            return null;
-          }
+          if (!isValid) return null;
 
           return { id: String(user.id), name: user.username, email: user.email };
         },

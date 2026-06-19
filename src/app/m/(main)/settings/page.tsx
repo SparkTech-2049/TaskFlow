@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import {
   Type, Eye, EyeOff, FolderOpen, Trash2, Download, CalendarPlus,
-  Plus, X, Bell, Palette, ArrowLeftRight, Check, Send, Edit3,
+  Plus, X, Bell, Palette, ArrowLeftRight, Check, Send, Edit3, LogOut,
 } from 'lucide-react';
+import { signOut } from 'next-auth/react';
 import { useSettingsStore } from '@/lib/stores/settings-store';
 import { useTaskStore } from '@/lib/stores/task-store';
 import { useCategories } from '@/lib/hooks/use-categories';
@@ -403,6 +404,16 @@ export default function MobileSettingsPage() {
                '测试推送'}
             </button>
           </div>
+        </div>
+
+        <div className="mt-4 border-t border-border-micro pt-4">
+          <button
+            onClick={() => signOut({ callbackUrl: '/m/login' })}
+            className="w-full h-10 rounded-xl border border-priority-urgent/20 bg-priority-urgent/5 text-sm font-medium text-priority-urgent flex items-center justify-center gap-2 active:bg-priority-urgent/10 transition-colors"
+          >
+            <LogOut size={15} />
+            退出登录
+          </button>
         </div>
       </div>
     </div>

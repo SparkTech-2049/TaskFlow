@@ -54,10 +54,30 @@
 }
 
 [data-skin="huawei"] {
-  --accent-blue: #CF0A2C;
-  --accent-indigo: #E63E30;
-  --gradient-brand-from: #CF0A2C;
-  --gradient-brand-to: #E63E30;
+  --bg-canvas: #F5F0FA;
+  --bg-card: #FFFFFF;
+  --bg-elevated: #F0ECF6;
+  --bg-surface: #FAF7FD;
+  --text-primary: #2D2D3A;
+  --text-secondary: #5A5A72;
+  --text-muted: #9999AE;
+  --border-micro: rgba(108, 139, 255, 0.1);
+  --accent-blue: #6C8BFF;
+  --accent-indigo: #7B68EE;
+  --accent-cyan: #4A6CF7;
+  --cta-orange: #FFA54F;
+  --priority-urgent: #D63384;
+  --priority-important: #FFA54F;
+  --priority-normal: #7B68EE;
+  --cat-project: #4A6CF7;
+  --cat-other: #7B68EE;
+  --cat-credit: #D63384;
+  --cat-study: #6C8BFF;
+  --gradient-brand-from: #4A6CF7;
+  --gradient-brand-to: #D63384;
+  --glass-blur: 20px;
+  --glass-border: rgba(108, 139, 255, 0.12);
+  --glass-shadow: 0 4px 20px rgba(74, 108, 247, 0.06);
 }
 
 [data-skin="forest"] {
@@ -101,6 +121,29 @@
 [data-skin="forest"] .glass-panel {
   background: rgba(255, 255, 255, 0.6);
   border: 1px solid rgba(45, 106, 79, 0.1);
+}
+
+[data-skin="huawei"] .glass-panel {
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(108, 139, 255, 0.12);
+  box-shadow: 0 8px 32px rgba(74, 108, 247, 0.1), 0 2px 8px rgba(74, 108, 247, 0.05);
+}
+
+[data-skin="huawei"] body {
+  background: linear-gradient(180deg, #E6E9F5 0%, #F5F0FA 40%, #FCE6E6 100%);
+}
+
+[data-skin="huawei"] body::before {
+  content: '';
+  position: fixed;
+  bottom: -10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 40%;
+  background: radial-gradient(ellipse at center, rgba(255, 214, 194, 0.4) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 [data-skin="sunset"] .glass-panel {

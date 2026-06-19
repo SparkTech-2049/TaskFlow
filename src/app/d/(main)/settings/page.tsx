@@ -237,7 +237,7 @@ export default function DesktopSettingsPage() {
               {[
                 { id: 'default' as const, label: '默认', desc: '清新蓝紫，经典风格', icon: Monitor },
                 { id: 'neon' as const, label: '霓虹', desc: '赛博朋克，霓虹发光', icon: Zap },
-                { id: 'huawei' as const, label: '华为', desc: '华为红，品牌风格', icon: CircleDot },
+                { id: 'huawei' as const, label: '华为', desc: '蓝紫渐变，梦幻科技', icon: CircleDot },
                 { id: 'forest' as const, label: '森林', desc: '温润绿意，自然专注', icon: TreePine },
                 { id: 'sunset' as const, label: '日落', desc: '暖橙治愈，活力温暖', icon: Sun },
               ].map((s) => {

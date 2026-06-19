@@ -4,14 +4,13 @@ import { useSettingsStore } from '@/lib/stores/settings-store';
 import { Palette, User } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 
-const SKIN_ORDER = ['default', 'neon', 'huawei', 'forest', 'sunset', 'ink'] as const;
+const SKIN_ORDER = ['default', 'neon', 'huawei', 'forest', 'sunset'] as const;
 const SKIN_LABELS: Record<string, string> = {
   default: '默认',
   neon: '霓虹',
   huawei: '华为',
   forest: '森林',
   sunset: '日落',
-  ink: '水墨',
 };
 
 export function TopBar() {

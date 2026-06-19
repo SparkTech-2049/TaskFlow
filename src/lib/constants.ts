@@ -46,4 +46,4 @@ export const STAT_COLORS: Record<string, string> = {
 export type PriorityId = 'urgent_important' | 'important' | 'urgent' | 'normal';
 export type CategoryId = 'project' | 'other' | 'credit' | 'study';
 export type CrossMonthType = 'overdue' | 'longterm' | 'cross_period' | 'normal';
-export type SkinType = 'default' | 'neon' | 'huawei' | 'forest' | 'sunset' | 'ink';
+export type SkinType = 'default' | 'neon' | 'huawei' | 'forest' | 'sunset';

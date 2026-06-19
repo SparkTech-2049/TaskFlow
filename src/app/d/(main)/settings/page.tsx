@@ -10,7 +10,7 @@ import { exportJSON, exportCSV, exportICS } from '@/lib/utils/export';
 import {
   Type, Palette, SortAsc,
   Trash2, Download, CalendarPlus, Tag, Bell, Plus,
-  Zap, CircleDot, Monitor, Check, X, LogOut, TreePine, Sun, Brush
+  Zap, CircleDot, Monitor, Check, X, LogOut, TreePine, Sun
 } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 
@@ -236,11 +236,10 @@ export default function DesktopSettingsPage() {
             <div className="grid grid-cols-3 gap-4">
               {[
                 { id: 'default' as const, label: '默认', desc: '清新蓝紫，经典风格', icon: Monitor },
-                { id: 'neon' as const, label: '霓虹', desc: '深色霓虹，科技感', icon: Zap },
+                { id: 'neon' as const, label: '霓虹', desc: '赛博朋克，霓虹发光', icon: Zap },
                 { id: 'huawei' as const, label: '华为', desc: '华为红，品牌风格', icon: CircleDot },
                 { id: 'forest' as const, label: '森林', desc: '温润绿意，自然专注', icon: TreePine },
                 { id: 'sunset' as const, label: '日落', desc: '暖橙治愈，活力温暖', icon: Sun },
-                { id: 'ink' as const, label: '水墨', desc: '墨底朱砂，高级克制', icon: Brush },
               ].map((s) => {
                 const Icon = s.icon;
                 const active = skin === s.id;

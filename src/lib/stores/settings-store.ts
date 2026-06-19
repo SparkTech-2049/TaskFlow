@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-type SkinType = 'default' | 'neon' | 'huawei' | 'forest' | 'sunset' | 'ink';
+type SkinType = 'default' | 'neon' | 'huawei' | 'forest' | 'sunset';
 
 interface SettingsStore {
   skin: SkinType;

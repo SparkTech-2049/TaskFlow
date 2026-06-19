@@ -28,14 +28,29 @@
 }
 
 [data-skin="neon"] {
-  --bg-canvas: #050508;
-  --bg-card: #0E0E14;
-  --bg-elevated: #12121A;
-  --bg-surface: #0A0A0F;
-  --text-primary: #EDEDEF;
-  --text-secondary: #8A8F98;
-  --text-muted: #555862;
-  --border-micro: rgba(255, 255, 255, 0.06);
+  --bg-canvas: #0A0A1A;
+  --bg-card: #10102A;
+  --bg-elevated: #181840;
+  --bg-surface: #0E0E22;
+  --text-primary: #E0E0FF;
+  --text-secondary: #8888BB;
+  --text-muted: #555580;
+  --border-micro: rgba(0, 255, 255, 0.1);
+  --accent-blue: #00F0FF;
+  --accent-indigo: #B026FF;
+  --accent-cyan: #00F0FF;
+  --cta-orange: #FF2D95;
+  --priority-urgent: #FF2D95;
+  --priority-important: #FFB800;
+  --priority-normal: #39FF14;
+  --cat-project: #00F0FF;
+  --cat-other: #B026FF;
+  --cat-credit: #FF2D95;
+  --cat-study: #39FF14;
+  --gradient-brand-from: #00F0FF;
+  --gradient-brand-to: #B026FF;
+  --glass-border: rgba(0, 240, 255, 0.12);
+  --glass-shadow: 0 0 30px rgba(0, 240, 255, 0.08), 0 0 60px rgba(176, 38, 255, 0.05);
 }
 
 [data-skin="huawei"] {
@@ -83,25 +98,6 @@
   --glass-shadow: 0 10px 30px rgba(224, 122, 95, 0.08);
 }
 
-[data-skin="ink"] {
-  --bg-canvas: #0F0F17;
-  --bg-card: #1A1A2E;
-  --bg-elevated: #22223B;
-  --bg-surface: #16162A;
-  --text-primary: #E8E6E3;
-  --text-secondary: #9A9CAB;
-  --text-muted: #5C5E6E;
-  --border-micro: rgba(255, 255, 255, 0.08);
-  --accent-blue: #C04A1A;
-  --accent-indigo: #D4654A;
-  --accent-cyan: #8D99AE;
-  --cta-orange: #C04A1A;
-  --gradient-brand-from: #C04A1A;
-  --gradient-brand-to: #D4654A;
-  --glass-border: rgba(255, 255, 255, 0.06);
-  --glass-shadow: 0 10px 30px rgba(192, 74, 26, 0.08);
-}
-
 [data-skin="forest"] .glass-panel {
   background: rgba(255, 255, 255, 0.6);
   border: 1px solid rgba(45, 106, 79, 0.1);
@@ -110,11 +106,6 @@
 [data-skin="sunset"] .glass-panel {
   background: rgba(255, 255, 255, 0.6);
   border: 1px solid rgba(224, 122, 95, 0.1);
-}
-
-[data-skin="ink"] .glass-panel {
-  background: rgba(26, 26, 46, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 @theme inline {
@@ -157,8 +148,9 @@ body {
 }
 
 [data-skin="neon"] .glass-panel {
-  background: rgba(14, 14, 20, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(16, 16, 42, 0.75);
+  border: 1px solid rgba(0, 240, 255, 0.15);
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.06), inset 0 0 20px rgba(176, 38, 255, 0.03);
 }
 
 .gradient-brand {

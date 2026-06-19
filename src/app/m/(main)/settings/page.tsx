@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import {
   Type, Eye, EyeOff, FolderOpen, Trash2, Download, CalendarPlus,
-  Plus, X, Bell, Palette, ArrowLeftRight, Check, Send, Edit3, LogOut, TreePine, Sun, Brush, Monitor, Zap,
+  Plus, X, Bell, Palette, ArrowLeftRight, Check, Send, Edit3, LogOut, TreePine, Sun, Monitor, Zap,
 } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import { useSettingsStore } from '@/lib/stores/settings-store';
@@ -213,7 +213,6 @@ export default function MobileSettingsPage() {
                 { id: 'huawei' as const, label: '华为', icon: Palette },
                 { id: 'forest' as const, label: '森林', icon: TreePine },
                 { id: 'sunset' as const, label: '日落', icon: Sun },
-                { id: 'ink' as const, label: '水墨', icon: Brush },
               ] as const).map((s) => {
                 const Icon = s.icon;
                 return (

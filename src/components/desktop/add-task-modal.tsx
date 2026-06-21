@@ -42,7 +42,7 @@ export function AddTaskModal({ open, onClose, onAdd, editTask, onEdit }: AddTask
     setLongterm(task.longterm);
     setReminder(task.reminder);
     setMonthlyRepeat(task.monthlyRepeat);
-    setNoDeadline(!task.deadline && !task.longterm);
+    setNoDeadline(false);
   };
 
   const resetForm = () => {

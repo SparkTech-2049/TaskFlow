@@ -14,6 +14,7 @@ export interface CategoryItem {
 
 let cached: CategoryItem[] | null = null;
 let fetchPromise: Promise<CategoryItem[]> | null = null;
+const listeners = new Set<(cats: CategoryItem[]) => void>();
 
 async function fetchCategories(): Promise<CategoryItem[]> {
   if (cached) return cached;
@@ -39,6 +40,7 @@ async function fetchCategories(): Promise<CategoryItem[]> {
       }));
       cached = mapped;
       fetchPromise = null;
+      listeners.forEach((l) => l(mapped));
       return mapped;
     })
     .catch(() => {
@@ -55,15 +57,19 @@ export function useCategories() {
   useEffect(() => {
     if (cached) {
       setCategories(cached);
-      return;
+    } else {
+      fetchCategories().then(setCategories);
     }
-    fetchCategories().then(setCategories);
+    listeners.add(setCategories);
+    return () => { listeners.delete(setCategories); };
   }, []);
 
   const invalidateCache = useCallback(() => {
     cached = null;
     fetchPromise = null;
-    fetchCategories().then(setCategories);
+    fetchCategories().then((cats) => {
+      listeners.forEach((l) => l(cats));
+    });
   }, []);
 
   return { categories, invalidateCache };

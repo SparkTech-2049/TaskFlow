@@ -44,7 +44,7 @@ export default function DesktopSettingsPage() {
   const [newSubCatName, setNewSubCatName] = useState('');
   const [addingToCat, setAddingToCat] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
-  const { categories } = useCategories();
+  const { categories, invalidateCache } = useCategories();
   const [catList, setCatList] = useState(CATEGORIES.map((c) => ({ ...c, subCategories: c.subCategories ? [...c.subCategories] : undefined })));
 
   useEffect(() => {
@@ -166,7 +166,7 @@ export default function DesktopSettingsPage() {
         ? { ...c, subCategories: c.subCategories.filter((s) => s.id !== subCatId) }
         : c
     ));
-    fetch(`/api/categories/${subCatId}`, { method: 'DELETE' }).catch(() => {});
+    fetch(`/api/categories/${subCatId}`, { method: 'DELETE' }).then(() => invalidateCache()).catch(() => {});
     showToast('子分类已删除');
   }
 
@@ -188,7 +188,7 @@ export default function DesktopSettingsPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: newId, name: newSubCatName.trim(), color: cat.color, parent_id: catId }),
-      }).catch(() => {});
+      }).then(() => invalidateCache()).catch(() => {});
       setNewSubCatName('');
       setAddingToCat(null);
       showToast('子分类已添加');

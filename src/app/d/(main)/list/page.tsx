@@ -209,7 +209,7 @@ export default function DesktopListPage() {
               <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
                 {overdueSorted.map((task) => (
                   <div key={task.id} className="flex items-center gap-2">
-                    <TaskItem task={task} categories={categories} onToggleDone={(id) => updateTask(id, { done: !tasks.find(t => t.id === id)?.done })} onDelete={(id) => deleteTask(id)} onArchive={(id) => updateTask(id, { archived: true, archivedAt: new Date().toISOString() })} onEdit={(id) => setEditingTask(tasks.find(t => t.id === id) ?? null)} />
+                    <TaskItem task={task} showDetailCard categories={categories} onToggleDone={(id) => updateTask(id, { done: !tasks.find(t => t.id === id)?.done })} onDelete={(id) => deleteTask(id)} onArchive={(id) => updateTask(id, { archived: true, archivedAt: new Date().toISOString() })} onEdit={(id) => setEditingTask(tasks.find(t => t.id === id) ?? null)} />
                     {task.deadline && (
                       <span className="shrink-0 text-[10px] text-priority-urgent">
                         逾期{getOverdueDays(task.deadline)}天
@@ -236,7 +236,7 @@ export default function DesktopListPage() {
               </div>
               <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
                 {longtermSorted.map((task) => (
-                  <TaskItem key={task.id} task={task} onToggleDone={(id) => updateTask(id, { done: !tasks.find(t => t.id === id)?.done })} onDelete={(id) => deleteTask(id)} onArchive={(id) => updateTask(id, { archived: true, archivedAt: new Date().toISOString() })} onEdit={(id) => setEditingTask(tasks.find(t => t.id === id) ?? null)} />
+                  <TaskItem key={task.id} task={task} showDetailCard categories={categories} onToggleDone={(id) => updateTask(id, { done: !tasks.find(t => t.id === id)?.done })} onDelete={(id) => deleteTask(id)} onArchive={(id) => updateTask(id, { archived: true, archivedAt: new Date().toISOString() })} onEdit={(id) => setEditingTask(tasks.find(t => t.id === id) ?? null)} />
                 ))}
               </div>
             </div>
@@ -257,7 +257,7 @@ export default function DesktopListPage() {
               <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
                 {crossPeriodSorted.map((task) => (
                   <div key={task.id} className="flex items-center gap-2">
-                    <TaskItem task={task} categories={categories} onToggleDone={(id) => updateTask(id, { done: !tasks.find(t => t.id === id)?.done })} onDelete={(id) => deleteTask(id)} onArchive={(id) => updateTask(id, { archived: true, archivedAt: new Date().toISOString() })} onEdit={(id) => setEditingTask(tasks.find(t => t.id === id) ?? null)} />
+                    <TaskItem task={task} showDetailCard categories={categories} onToggleDone={(id) => updateTask(id, { done: !tasks.find(t => t.id === id)?.done })} onDelete={(id) => deleteTask(id)} onArchive={(id) => updateTask(id, { archived: true, archivedAt: new Date().toISOString() })} onEdit={(id) => setEditingTask(tasks.find(t => t.id === id) ?? null)} />
                     {task.startDate && task.endDate && (
                       <span className="shrink-0 text-[10px] text-accent-blue">
                         {task.startDate.slice(5).replace('-', '/')}→{task.endDate.slice(5).replace('-', '/')} {getCrossPeriodProgress(task.startDate, task.endDate)}%
@@ -279,7 +279,7 @@ export default function DesktopListPage() {
               </div>
               <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
                 {group.tasks.map((task) => (
-                  <TaskItem key={task.id} task={task} onToggleDone={(id) => updateTask(id, { done: !tasks.find(t => t.id === id)?.done })} onDelete={(id) => deleteTask(id)} onArchive={(id) => updateTask(id, { archived: true, archivedAt: new Date().toISOString() })} onEdit={(id) => setEditingTask(tasks.find(t => t.id === id) ?? null)} />
+                  <TaskItem key={task.id} task={task} showDetailCard categories={categories} onToggleDone={(id) => updateTask(id, { done: !tasks.find(t => t.id === id)?.done })} onDelete={(id) => deleteTask(id)} onArchive={(id) => updateTask(id, { archived: true, archivedAt: new Date().toISOString() })} onEdit={(id) => setEditingTask(tasks.find(t => t.id === id) ?? null)} />
                 ))}
               </div>
             </div>

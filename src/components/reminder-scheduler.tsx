@@ -32,6 +32,14 @@ async function sendBark(webhook: string, title: string, body: string, group?: st
   } catch {}
 }
 
+function getLocalToday(): string {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const d = String(now.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
 function getTaskReminderTime(t: { deadline: string | null; time: string | null }): number | null {
   if (t.deadline && t.time) {
     const d = new Date(`${t.deadline}T${t.time}`);
@@ -46,7 +54,7 @@ function getTaskReminderTime(t: { deadline: string | null; time: string | null }
 
 function getDailyReminderTime(t: { deadline: string | null; time: string | null }): number | null {
   if (t.deadline || !t.time) return null;
-  const today = new Date().toISOString().slice(0, 10);
+  const today = getLocalToday();
   const d = new Date(`${today}T${t.time}`);
   return isNaN(d.getTime()) ? null : d.getTime();
 }
@@ -66,7 +74,7 @@ export function ReminderScheduler() {
     const now = Date.now();
     const notified = notifiedRef.current;
 
-    const pending: { id: number; key: string; title: string; remindAt: number; cat: string }[] = [];
+    const pending: { id: number; key: string; title: string; remindAt: number; cat: string; isDaily: boolean }[] = [];
 
     for (const t of tasks) {
       if (!t.reminder || t.done || t.archived) continue;
@@ -77,19 +85,19 @@ export function ReminderScheduler() {
         if (!notified.has(key)) {
           const diff = remindAt - now;
           if (diff > -LATE_MS && diff < 24 * 3600_000) {
-            pending.push({ id: t.id, key, title: t.title, remindAt, cat: t.cat });
+            pending.push({ id: t.id, key, title: t.title, remindAt, cat: t.cat, isDaily: false });
           }
         }
       }
 
       const dailyAt = getDailyReminderTime(t);
       if (dailyAt !== null) {
-        const today = new Date().toISOString().slice(0, 10);
+        const today = getLocalToday();
         const key = `${t.id}-daily-${today}-${t.time}`;
         if (!notified.has(key)) {
           const diff = dailyAt - now;
           if (diff > -LATE_MS && diff < 24 * 3600_000) {
-            pending.push({ id: t.id, key, title: t.title, remindAt: dailyAt, cat: t.cat });
+            pending.push({ id: t.id, key, title: t.title, remindAt: dailyAt, cat: t.cat, isDaily: true });
           }
         }
       }
@@ -102,7 +110,8 @@ export function ReminderScheduler() {
         notifiedRef.current.add(p.key);
         saveNotifiedSet(notifiedRef.current);
         const groupName = CAT_NAMES[p.cat] || p.cat;
-        sendBark(barkWebhook, 'TaskFlow 提醒', `「${p.title}」已到期！`, groupName);
+        const body = p.isDaily ? `「${p.title}」提醒时间到了！` : `「${p.title}」已到期！`;
+        sendBark(barkWebhook, 'TaskFlow 提醒', body, groupName);
       }, delay);
       timersRef.current.push(timer);
     }

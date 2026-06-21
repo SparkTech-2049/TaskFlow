@@ -16,16 +16,17 @@ import { getCrossMonthType, getCrossPeriodProgress } from '@/lib/utils/cross-mon
 import { cn } from '@/lib/utils/cn';
 import { CAT_ORDER, CAT_NAMES, CAT_COLORS, SUB_CAT_ORDER, SUB_CAT_NAMES, PRIORITY_COLORS, getCatPath } from '@/components/shared/constants';
 import { useMonthNav } from '@/components/shared/use-month-nav';
+import { useCategories } from '@/lib/hooks/use-categories';
 
 /* ── 常量 ── */
 const FILTERS = ['全部', '待完成', '已完成'] as const;
 type Filter = (typeof FILTERS)[number];
 
 /* ── 任务行 ── */
-function TaskRow({ task }: { task: ReturnType<typeof useTaskStore.getState>['tasks'][number] }) {
+function TaskRow({ task, categories }: { task: ReturnType<typeof useTaskStore.getState>['tasks'][number]; categories: ReturnType<typeof useCategories>['categories'] }) {
   const toggleDone = useTaskStore((s) => s.updateTask);
   const priorityColor = PRIORITY_COLORS[task.priorityLevel] || PRIORITY_COLORS.normal;
-  const catPath = getCatPath(task.cat, task.subCat);
+  const catPath = getCatPath(task.cat, task.subCat, categories);
 
   return (
     <div className="flex items-center gap-2 rounded-xl bg-bg-elevated px-2 py-2.5">
@@ -76,6 +77,7 @@ export default function MobileListPage() {
   const tasks = useTaskStore((s) => s.tasks);
   const updateTask = useTaskStore((s) => s.updateTask);
   const { showDone, defaultSort } = useSettingsStore();
+  const { categories } = useCategories();
   const { label, goPrev, goNext, currentMonthDate, monthKey } = useMonthNav();
   const [filter, setFilter] = useState<Filter>('全部');
 
@@ -209,7 +211,7 @@ export default function MobileListPage() {
             </div>
             <div className="space-y-1.5">
               {applyFilter(overdue).map((t) => (
-                <TaskRow key={t.id} task={t} />
+                <TaskRow key={t.id} task={t} categories={categories} />
               ))}
             </div>
           </div>
@@ -229,7 +231,7 @@ export default function MobileListPage() {
             </div>
             <div className="space-y-1.5">
               {applyFilter(longterm).map((t) => (
-                <TaskRow key={t.id} task={t} />
+                <TaskRow key={t.id} task={t} categories={categories} />
               ))}
             </div>
           </div>
@@ -262,7 +264,7 @@ export default function MobileListPage() {
                         />
                       </div>
                     )}
-                    <TaskRow task={t} />
+                    <TaskRow task={t} categories={categories} />
                   </div>
                 );
               })}
@@ -312,7 +314,7 @@ export default function MobileListPage() {
                         </div>
                         <div className="space-y-1.5 pl-2">
                           {subGroups[sc].map((t) => (
-                            <TaskRow key={t.id} task={t} />
+                            <TaskRow key={t.id} task={t} categories={categories} />
                           ))}
                         </div>
                       </div>
@@ -321,7 +323,7 @@ export default function MobileListPage() {
                 ) : (
                   <div className="space-y-1.5">
                     {filtered.map((t) => (
-                      <TaskRow key={t.id} task={t} />
+                      <TaskRow key={t.id} task={t} categories={categories} />
                     ))}
                   </div>
                 )}
@@ -341,7 +343,7 @@ export default function MobileListPage() {
                 </div>
                 <div className="space-y-1.5">
                   {filtered.map((t) => (
-                    <TaskRow key={t.id} task={t} />
+                    <TaskRow key={t.id} task={t} categories={categories} />
                   ))}
                 </div>
               </div>

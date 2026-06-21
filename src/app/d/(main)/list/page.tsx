@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils/cn';
 import { useTaskStore } from '@/lib/stores/task-store';
 import { useSettingsStore } from '@/lib/stores/settings-store';
 import { CATEGORIES, CROSS_MONTH_COLORS } from '@/lib/constants';
+import { useCategories } from '@/lib/hooks/use-categories';
 import { MonthPicker } from '@/components/desktop/month-picker';
 import { TaskItem } from '@/components/desktop/task-item';
 import { AddTaskModal } from '@/components/desktop/add-task-modal';
@@ -18,6 +19,7 @@ type ViewMode = 'month' | 'all';
 export default function DesktopListPage() {
   const { tasks, addTask, updateTask, deleteTask } = useTaskStore();
   const { showDone, defaultSort } = useSettingsStore();
+  const { categories } = useCategories();
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [filter, setFilter] = useState<FilterType>('all');
@@ -207,7 +209,7 @@ export default function DesktopListPage() {
               <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
                 {overdueSorted.map((task) => (
                   <div key={task.id} className="flex items-center gap-2">
-                    <TaskItem task={task} onToggleDone={(id) => updateTask(id, { done: !tasks.find(t => t.id === id)?.done })} onDelete={(id) => deleteTask(id)} onArchive={(id) => updateTask(id, { archived: true, archivedAt: new Date().toISOString() })} onEdit={(id) => setEditingTask(tasks.find(t => t.id === id) ?? null)} />
+                    <TaskItem task={task} categories={categories} onToggleDone={(id) => updateTask(id, { done: !tasks.find(t => t.id === id)?.done })} onDelete={(id) => deleteTask(id)} onArchive={(id) => updateTask(id, { archived: true, archivedAt: new Date().toISOString() })} onEdit={(id) => setEditingTask(tasks.find(t => t.id === id) ?? null)} />
                     {task.deadline && (
                       <span className="shrink-0 text-[10px] text-priority-urgent">
                         逾期{getOverdueDays(task.deadline)}天
@@ -255,7 +257,7 @@ export default function DesktopListPage() {
               <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
                 {crossPeriodSorted.map((task) => (
                   <div key={task.id} className="flex items-center gap-2">
-                    <TaskItem task={task} onToggleDone={(id) => updateTask(id, { done: !tasks.find(t => t.id === id)?.done })} onDelete={(id) => deleteTask(id)} onArchive={(id) => updateTask(id, { archived: true, archivedAt: new Date().toISOString() })} onEdit={(id) => setEditingTask(tasks.find(t => t.id === id) ?? null)} />
+                    <TaskItem task={task} categories={categories} onToggleDone={(id) => updateTask(id, { done: !tasks.find(t => t.id === id)?.done })} onDelete={(id) => deleteTask(id)} onArchive={(id) => updateTask(id, { archived: true, archivedAt: new Date().toISOString() })} onEdit={(id) => setEditingTask(tasks.find(t => t.id === id) ?? null)} />
                     {task.startDate && task.endDate && (
                       <span className="shrink-0 text-[10px] text-accent-blue">
                         {task.startDate.slice(5).replace('-', '/')}→{task.endDate.slice(5).replace('-', '/')} {getCrossPeriodProgress(task.startDate, task.endDate)}%

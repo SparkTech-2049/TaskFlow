@@ -7,7 +7,8 @@ import { cn } from '@/lib/utils/cn';
 import { useCalendar } from '@/lib/hooks/use-calendar';
 import { useTaskStore } from '@/lib/stores/task-store';
 import { useSettingsStore } from '@/lib/stores/settings-store';
-import { getPriorityColor, getCategoryInfo, getSubCategoryName, WEEKDAYS } from '@/components/shared/constants';
+import { getPriorityColor, getCategoryInfo, WEEKDAYS } from '@/components/shared/constants';
+import { useCategories } from '@/lib/hooks/use-categories';
 import { StatCards } from '@/components/desktop/stat-cards';
 import { TaskItem } from '@/components/desktop/task-item';
 import { AddTaskModal } from '@/components/desktop/add-task-modal';
@@ -18,6 +19,7 @@ function HomeContent() {
   const catFilter = searchParams.get('cat') ?? '';
   const { tasks, addTask, updateTask, deleteTask } = useTaskStore();
   const { showDone } = useSettingsStore();
+  const { categories } = useCategories();
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
 
@@ -91,7 +93,8 @@ function HomeContent() {
         subGroups.push({ key: catId, label: catName, tasks: noSubCat });
       }
       for (const [sc, tasks] of Object.entries(subByCat)) {
-        const subCatName = getSubCategoryName(catId, sc) ?? sc;
+        const catData = categories.find((c) => c.id === catId);
+        const subCatName = catData?.subCategories?.find((s) => s.id === sc)?.name ?? sc;
         subGroups.push({ key: sc, label: `${catName} > ${subCatName}`, tasks });
       }
       groups.push({ catId, catName, catColor, subGroups });
@@ -221,6 +224,7 @@ function HomeContent() {
                             <TaskItem
                               key={task.id}
                               task={task}
+                              categories={categories}
                               onToggleDone={(id) => updateTask(id, { done: !tasks.find(t => t.id === id)?.done })}
                               onDelete={(id) => deleteTask(id)}
                               onArchive={(id) => updateTask(id, { archived: true, archivedAt: new Date().toISOString() })}

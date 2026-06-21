@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { memo } from 'react';
 import { cn } from '@/lib/utils/cn';
 import { getPriorityColor, getCategoryInfo, getSubCategoryName } from '@/components/shared/constants';
+import type { CategoryItem } from '@/lib/hooks/use-categories';
 import type { Task } from '@/lib/types';
 import { Check, Pencil, Archive, Trash2, Bell } from 'lucide-react';
 
@@ -11,6 +12,7 @@ interface TaskItemProps {
   task: Task;
   compact?: boolean;
   showActions?: boolean;
+  categories?: CategoryItem[];
   onToggleDone?: (id: number) => void;
   onDelete?: (id: number) => void;
   onArchive?: (id: number) => void;
@@ -21,6 +23,7 @@ export const TaskItem = memo(function TaskItem({
   task,
   compact = false,
   showActions = true,
+  categories,
   onToggleDone,
   onDelete,
   onArchive,
@@ -28,7 +31,7 @@ export const TaskItem = memo(function TaskItem({
 }: TaskItemProps) {
   const priorityColor = getPriorityColor(task.priorityLevel);
   const catInfo = getCategoryInfo(task.cat);
-  const subCatName = getSubCategoryName(task.cat, task.subCat);
+  const subCatName = getSubCategoryName(task.cat, task.subCat, categories);
 
   return (
     <div

@@ -1,4 +1,5 @@
 import { CATEGORIES, PRIORITIES } from '@/lib/constants';
+import type { CategoryItem } from '@/lib/hooks/use-categories';
 
 export const CAT_NAMES: Record<string, string> = {
   project: '工作',
@@ -64,15 +65,20 @@ export function getCategoryInfo(cat: string) {
   return CATEGORIES.find((c) => c.id === cat);
 }
 
-export function getSubCategoryName(cat: string, subCat: string | null): string | null {
+export function getSubCategoryName(cat: string, subCat: string | null, categories?: CategoryItem[]): string | null {
   if (!subCat) return null;
+  if (categories) {
+    const catData = categories.find((c) => c.id === cat);
+    const found = catData?.subCategories?.find((s) => s.id === subCat)?.name;
+    if (found) return found;
+  }
   const category = CATEGORIES.find((c) => c.id === cat);
   return category?.subCategories?.find((s) => s.id === subCat)?.name ?? null;
 }
 
-export function getCatPath(cat: string, subCat: string | null): string {
+export function getCatPath(cat: string, subCat: string | null, categories?: CategoryItem[]): string {
   const catName = CAT_NAMES[cat] || cat;
   if (!subCat) return catName;
-  const subName = SUB_CAT_NAMES[subCat] || subCat;
+  const subName = getSubCategoryName(cat, subCat, categories) ?? SUB_CAT_NAMES[subCat] ?? subCat;
   return `${catName} > ${subName}`;
 }

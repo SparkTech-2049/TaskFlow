@@ -5,6 +5,7 @@ import { RotateCcw } from 'lucide-react';
 import { useTaskStore } from '@/lib/stores/task-store';
 import { cn } from '@/lib/utils/cn';
 import { CAT_ORDER, CAT_NAMES, CAT_COLORS, SUB_CAT_ORDER, SUB_CAT_NAMES, PRIORITY_COLORS, getCatPath } from '@/components/shared/constants';
+import { useCategories } from '@/lib/hooks/use-categories';
 
 const CAT_TABS = ['全部', '工作', '琐事', '理财', '学习'] as const;
 const CAT_TAB_MAP: Record<string, string> = {
@@ -19,6 +20,7 @@ type CatTab = (typeof CAT_TABS)[number];
 export default function MobileArchivePage() {
   const tasks = useTaskStore((s) => s.tasks);
   const updateTask = useTaskStore((s) => s.updateTask);
+  const { categories } = useCategories();
   const [catTab, setCatTab] = useState<CatTab>('全部');
 
   const archivedTasks = useMemo(() => {
@@ -127,7 +129,7 @@ export default function MobileArchivePage() {
                               </div>
                               <div className="space-y-1.5 pl-2">
                                 {subGroups[sc].map((t) => (
-                                  <ArchivedTaskRow key={t.id} task={t} onActivate={handleActivate} />
+                                  <ArchivedTaskRow key={t.id} task={t} categories={categories} onActivate={handleActivate} />
                                 ))}
                               </div>
                             </div>
@@ -136,7 +138,7 @@ export default function MobileArchivePage() {
                       ) : (
                         <div className="space-y-1.5">
                           {catTasks.map((t) => (
-                            <ArchivedTaskRow key={t.id} task={t} onActivate={handleActivate} />
+                            <ArchivedTaskRow key={t.id} task={t} categories={categories} onActivate={handleActivate} />
                           ))}
                         </div>
                       )}
@@ -154,13 +156,15 @@ export default function MobileArchivePage() {
 
 function ArchivedTaskRow({
   task,
+  categories,
   onActivate,
 }: {
   task: ReturnType<typeof useTaskStore.getState>['tasks'][number];
+  categories: ReturnType<typeof useCategories>['categories'];
   onActivate: (id: number) => void;
 }) {
   const priorityColor = PRIORITY_COLORS[task.priorityLevel] || PRIORITY_COLORS.normal;
-  const catPath = getCatPath(task.cat, task.subCat);
+  const catPath = getCatPath(task.cat, task.subCat, categories);
 
   return (
     <div className="flex items-center gap-2 rounded-xl bg-bg-elevated px-2 py-2.5">

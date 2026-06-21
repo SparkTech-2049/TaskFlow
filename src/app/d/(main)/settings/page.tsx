@@ -10,7 +10,7 @@ import { exportJSON, exportCSV, exportICS } from '@/lib/utils/export';
 import {
   Type, Palette, SortAsc,
   Trash2, Download, CalendarPlus, Tag, Bell, Plus,
-  Zap, CircleDot, Monitor, Check, X, LogOut, TreePine
+  Zap, CircleDot, Monitor, Check, X, LogOut, TreePine, Power, Send
 } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 
@@ -39,7 +39,6 @@ function Toggle({ value, onChange }: { value: boolean; onChange: (v: boolean) =>
 
 export default function DesktopSettingsPage() {
   const [activeSection, setActiveSection] = useState<SettingsSection>('appearance');
-  const [barkTestStatus, setBarkTestStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [clearStatus, setClearStatus] = useState<'idle' | 'done'>('idle');
   const [exportStatus, setExportStatus] = useState<'idle' | 'done'>('idle');
   const [newSubCatName, setNewSubCatName] = useState('');
@@ -60,8 +59,11 @@ export default function DesktopSettingsPage() {
     showDone, setShowDone,
     hideEmptyCat, setHideEmptyCat,
     defaultSort, setDefaultSort,
-    barkWebhook, setBarkWebhook,
+    barkChannels, addBarkChannel, updateBarkChannel, removeBarkChannel, fetchBarkChannels,
   } = useSettingsStore();
+
+  const [newBarkName, setNewBarkName] = useState('');
+  const [newBarkUrl, setNewBarkUrl] = useState('');
 
   const { tasks } = useTaskStore();
 
@@ -99,20 +101,58 @@ export default function DesktopSettingsPage() {
     showToast('日历文件已导出，可导入 Apple/Google 日历');
   }
 
-  async function handleBarkTest() {
-    if (!barkWebhook) return;
-    setBarkTestStatus('sending');
+  async function handleAddBark() {
+    if (!newBarkName.trim() || !newBarkUrl.trim()) return;
     try {
-      const res = await fetch(barkWebhook, {
+      const res = await fetch('/api/bark-channels', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: 'TaskFlow 通知测试', body: '如果你看到这条消息，说明 BARK 推送配置成功！' }),
+        body: JSON.stringify({ name: newBarkName.trim(), url: newBarkUrl.trim() }),
       });
-      setBarkTestStatus(res.ok ? 'success' : 'error');
+      if (res.ok) {
+        const channel = await res.json();
+        addBarkChannel(channel);
+        setNewBarkName('');
+        setNewBarkUrl('');
+        showToast('推送渠道已添加');
+      }
+    } catch {}
+  }
+
+  async function handleDeleteBark(id: number) {
+    try {
+      const res = await fetch(`/api/bark-channels?id=${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        removeBarkChannel(id);
+        showToast('推送渠道已删除');
+      }
+    } catch {}
+  }
+
+  async function handleToggleBark(id: number, enabled: boolean) {
+    try {
+      const res = await fetch('/api/bark-channels', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, enabled: !enabled }),
+      });
+      if (res.ok) {
+        updateBarkChannel(id, { enabled: !enabled });
+      }
+    } catch {}
+  }
+
+  async function handleTestBark(url: string) {
+    try {
+      await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: 'TaskFlow 通知测试', body: '如果你看到这条消息，说明推送配置成功！' }),
+      });
+      showToast('测试推送已发送');
     } catch {
-      setBarkTestStatus('error');
+      showToast('推送发送失败');
     }
-    setTimeout(() => setBarkTestStatus('idle'), 3000);
   }
 
   function handleDeleteSubCat(catId: string, subCatId: string) {
@@ -422,25 +462,48 @@ export default function DesktopSettingsPage() {
         {activeSection === 'notification' && (
           <div className="flex flex-col gap-5">
             <h3 className="text-base font-semibold text-text-primary">通知推送</h3>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[13px] font-medium text-text-secondary">BARK Webhook URL</label>
-              <input
-                value={barkWebhook}
-                onChange={(e) => setBarkWebhook(e.target.value)}
-                placeholder="https://api.day.app/your-key"
-                className="h-10 w-full rounded-xl border border-border-micro bg-bg-elevated px-3 text-sm text-text-primary outline-none placeholder:text-text-muted focus:border-accent-blue"
-              />
+            <div className="flex flex-col gap-3">
+              {barkChannels.map((ch) => (
+                <div key={ch.id} className="flex items-center gap-3 rounded-xl border border-border-micro bg-bg-elevated px-4 py-3">
+                  <button onClick={() => handleToggleBark(ch.id, ch.enabled)} className="shrink-0">
+                    <Power className={cn('h-4 w-4', ch.enabled ? 'text-priority-normal' : 'text-text-muted')} />
+                  </button>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[13px] font-medium text-text-primary">{ch.name}</div>
+                    <div className="truncate text-[11px] text-text-muted">{ch.url}</div>
+                  </div>
+                  <button onClick={() => handleTestBark(ch.url)} className="shrink-0 rounded-lg px-2.5 py-1 text-[11px] font-medium text-accent-blue bg-accent-blue/5 hover:bg-accent-blue/10 transition-colors">
+                    测试
+                  </button>
+                  <button onClick={() => handleDeleteBark(ch.id)} className="shrink-0">
+                    <Trash2 className="h-3.5 w-3.5 text-text-muted hover:text-priority-urgent transition-colors" />
+                  </button>
+                </div>
+              ))}
             </div>
-            <button
-              disabled={!barkWebhook || barkTestStatus === 'sending'}
-              onClick={handleBarkTest}
-              className={cn(
-                'rounded-xl px-4 py-2.5 text-sm font-medium text-white disabled:opacity-50',
-                barkTestStatus === 'success' ? 'bg-priority-normal' : barkTestStatus === 'error' ? 'bg-priority-urgent' : 'gradient-brand'
-              )}
-            >
-              {barkTestStatus === 'sending' ? '发送中...' : barkTestStatus === 'success' ? '发送成功' : barkTestStatus === 'error' ? '发送失败' : '测试推送'}
-            </button>
+            <div className="flex flex-col gap-2 rounded-xl border border-border-micro bg-bg-elevated p-4">
+              <div className="text-[12px] font-medium text-text-secondary">添加推送渠道</div>
+              <input
+                value={newBarkName}
+                onChange={(e) => setNewBarkName(e.target.value)}
+                placeholder="名称（如：我的手机）"
+                className="h-9 w-full rounded-lg border border-border-micro bg-bg-card px-3 text-sm text-text-primary outline-none placeholder:text-text-muted focus:border-accent-blue"
+              />
+              <input
+                value={newBarkUrl}
+                onChange={(e) => setNewBarkUrl(e.target.value)}
+                placeholder="Bark URL（如：https://api.day.app/your-key）"
+                className="h-9 w-full rounded-lg border border-border-micro bg-bg-card px-3 text-sm text-text-primary outline-none placeholder:text-text-muted focus:border-accent-blue"
+              />
+              <button
+                onClick={handleAddBark}
+                disabled={!newBarkName.trim() || !newBarkUrl.trim()}
+                className="flex items-center justify-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium text-white gradient-brand disabled:opacity-50"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                添加
+              </button>
+            </div>
           </div>
         )}
 

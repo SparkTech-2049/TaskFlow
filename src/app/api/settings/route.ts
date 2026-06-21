@@ -25,7 +25,7 @@ export async function PUT(request: Request) {
 
   const body = await request.json();
 
-  const allowedFields = ['fontSize', 'showDone', 'hideEmptyCat', 'defaultSort', 'barkWebhook'] as const;
+  const allowedFields = ['fontSize', 'showDone', 'hideEmptyCat', 'defaultSort'] as const;
   const updates: Record<string, unknown> = {};
   for (const field of allowedFields) {
     if (body[field] !== undefined) {

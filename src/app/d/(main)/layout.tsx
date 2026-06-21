@@ -24,12 +24,16 @@ export default function DesktopLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { skin, fontSize } = useSettingsStore();
+  const { skin, fontSize, fetchBarkChannels } = useSettingsStore();
 
   useEffect(() => {
     applySkin(skin);
     applyFontSize(fontSize);
   }, [skin, fontSize]);
+
+  useEffect(() => {
+    fetchBarkChannels();
+  }, [fetchBarkChannels]);
 
   return (
     <div className="flex h-screen overflow-hidden bg-bg-canvas" data-skin={skin}>

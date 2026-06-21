@@ -61,7 +61,7 @@ function getDailyReminderTime(t: { deadline: string | null; time: string | null 
 
 export function ReminderScheduler() {
   const tasks = useTaskStore((s) => s.tasks);
-  const barkWebhook = useSettingsStore((s) => s.barkWebhook);
+  const barkChannels = useSettingsStore((s) => s.barkChannels);
   const notifiedRef = useRef<Set<string>>(getNotifiedSet());
   const timersRef = useRef<number[]>([]);
 
@@ -69,7 +69,8 @@ export function ReminderScheduler() {
     timersRef.current.forEach(clearTimeout);
     timersRef.current = [];
 
-    if (!barkWebhook) return;
+    const enabledUrls = barkChannels.filter((c) => c.enabled).map((c) => c.url);
+    if (enabledUrls.length === 0) return;
 
     const now = Date.now();
     const notified = notifiedRef.current;
@@ -111,7 +112,9 @@ export function ReminderScheduler() {
         saveNotifiedSet(notifiedRef.current);
         const groupName = CAT_NAMES[p.cat] || p.cat;
         const body = p.isDaily ? `「${p.title}」提醒时间到了！` : `「${p.title}」已到期！`;
-        sendBark(barkWebhook, 'TaskFlow 提醒', body, groupName);
+        for (const url of enabledUrls) {
+          sendBark(url, 'TaskFlow 提醒', body, groupName);
+        }
       }, delay);
       timersRef.current.push(timer);
     }
@@ -120,7 +123,7 @@ export function ReminderScheduler() {
       timersRef.current.forEach(clearTimeout);
       timersRef.current = [];
     };
-  }, [tasks, barkWebhook]);
+  }, [tasks, barkChannels]);
 
   return null;
 }

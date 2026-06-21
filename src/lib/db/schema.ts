@@ -76,6 +76,17 @@ export const bannedIps = pgTable('banned_ips', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
+export const barkChannels = pgTable('bark_channels', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
+  name: varchar('name', { length: 50 }).notNull(),
+  url: varchar('url', { length: 500 }).notNull(),
+  enabled: boolean('enabled').default(true).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
 export const accounts = pgTable('accounts', {
   id: serial('id').primaryKey(),
   userId: integer('user_id')

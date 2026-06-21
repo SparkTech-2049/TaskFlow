@@ -22,13 +22,17 @@ export default function MobileLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { skin, fontSize } = useSettingsStore();
+  const { skin, fontSize, fetchBarkChannels } = useSettingsStore();
   const { fetchFromServer, _hydrated } = useTaskStore();
 
   useEffect(() => {
     applySkin(skin);
     applyFontSize(fontSize);
   }, [skin, fontSize]);
+
+  useEffect(() => {
+    fetchBarkChannels();
+  }, [fetchBarkChannels]);
 
   useEffect(() => {
     if (_hydrated) {

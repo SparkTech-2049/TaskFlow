@@ -136,7 +136,7 @@ export const TaskItem = memo(function TaskItem({
       </div>
 
       {showDetailCard && showDetail && (
-        <div className="absolute left-0 top-full z-50 mt-1 animate-in fade-in-0 zoom-in-95 duration-150">
+        <div className="absolute left-0 top-full z-50 mt-1 pointer-events-none animate-in fade-in-0 zoom-in-95 duration-150">
           <TaskDetailCard task={task} categories={categories} />
         </div>
       )}

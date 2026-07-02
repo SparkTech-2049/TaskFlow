@@ -7,7 +7,7 @@ import { getAuthUserId } from '@/lib/auth/api-auth';
 const ALLOWED_FIELDS = [
   'cat', 'subCat', 'title', 'meta', 'priorityLevel',
   'deadline', 'startDate', 'endDate', 'time',
-  'done', 'archived', 'longterm', 'reminder', 'monthlyRepeat', 'archivedAt', 'completedAt',
+  'done', 'archived', 'longterm', 'reminder', 'monthlyRepeat', 'repeatSourceId', 'archivedAt', 'completedAt',
 ] as const;
 
 function mapBodyToColumns(body: Record<string, unknown>): Record<string, unknown> {
@@ -17,6 +17,7 @@ function mapBodyToColumns(body: Record<string, unknown>): Record<string, unknown
     start_date: 'startDate',
     end_date: 'endDate',
     monthly_repeat: 'monthlyRepeat',
+    repeat_source_id: 'repeatSourceId',
     archived_at: 'archivedAt',
     completed_at: 'completedAt',
   };

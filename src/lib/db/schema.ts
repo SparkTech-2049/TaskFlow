@@ -39,6 +39,7 @@ export const tasks = pgTable('tasks', {
   longterm: boolean('longterm').default(false).notNull(),
   reminder: boolean('reminder').default(false).notNull(),
   monthlyRepeat: boolean('monthly_repeat').default(false).notNull(),
+  repeatSourceId: integer('repeat_source_id'),
   archivedAt: timestamp('archived_at'),
   completedAt: timestamp('completed_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),

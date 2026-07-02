@@ -41,6 +41,7 @@ export async function POST(request: Request) {
         longterm: Boolean(ct.longterm),
         reminder: Boolean(ct.reminder),
         monthlyRepeat: Boolean(ct.monthly_repeat),
+        repeatSourceId: ct.repeat_source_id ? Number(ct.repeat_source_id) : null,
       });
     } else {
       const clientUpdated = new Date(String(ct.updated_at || 0)).getTime();
@@ -58,6 +59,7 @@ export async function POST(request: Request) {
           longterm: Boolean(ct.longterm),
           reminder: Boolean(ct.reminder),
           monthlyRepeat: Boolean(ct.monthly_repeat),
+          repeatSourceId: ct.repeat_source_id ? Number(ct.repeat_source_id) : null,
         }});
       }
     }

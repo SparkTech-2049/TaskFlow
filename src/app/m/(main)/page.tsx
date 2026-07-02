@@ -1,7 +1,7 @@
 ﻿'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Plus, Clock, Flag, CheckCircle2, AlertTriangle, ListTodo } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Clock, Flag, CheckCircle2, AlertTriangle, ListTodo, Repeat } from 'lucide-react';
 import { useCalendar } from '@/lib/hooks/use-calendar';
 import { useTaskStore } from '@/lib/stores/task-store';
 import { AddTaskSheet } from '@/components/mobile/add-task-sheet';
@@ -18,8 +18,13 @@ export default function MobileHomePage() {
     selectDate,
   } = useCalendar();
 
-  const { tasks } = useTaskStore();
+  const { tasks, generateMonthlyRepeats } = useTaskStore();
   const [addSheetOpen, setAddSheetOpen] = useState(false);
+
+  useEffect(() => {
+    const month = new Date().toISOString().slice(0, 7);
+    generateMonthlyRepeats(month);
+  }, [generateMonthlyRepeats]);
 
   // Stats
   const stats = useMemo(() => {
@@ -226,6 +231,8 @@ export default function MobileHomePage() {
                           )}
                         >
                           {task.title}
+                          {task.monthlyRepeat && <Repeat size={10} className="inline ml-1 text-accent-indigo" />}
+                          {task.repeatSourceId && <Repeat size={10} className="inline ml-1 text-accent-indigo/60" />}
                         </span>
                         {task.time && (
                           <span className="flex items-center gap-0.5 text-[10px] text-text-muted shrink-0">

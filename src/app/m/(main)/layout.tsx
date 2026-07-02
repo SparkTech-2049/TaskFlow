@@ -23,7 +23,7 @@ export default function MobileLayout({
   const pathname = usePathname();
   const router = useRouter();
   const { skin, fontSize, fetchBarkChannels } = useSettingsStore();
-  const { fetchFromServer, _hydrated } = useTaskStore();
+  const { fetchFromServer, generateMonthlyRepeats, cleanupDuplicateRepeats, _hydrated } = useTaskStore();
 
   useEffect(() => {
     applySkin(skin);
@@ -36,9 +36,13 @@ export default function MobileLayout({
 
   useEffect(() => {
     if (_hydrated) {
-      fetchFromServer();
+      fetchFromServer().then(() => {
+        const currentMonth = new Date().toISOString().slice(0, 7);
+        generateMonthlyRepeats(currentMonth);
+        cleanupDuplicateRepeats();
+      });
     }
-  }, [_hydrated, fetchFromServer]);
+  }, [_hydrated, fetchFromServer, generateMonthlyRepeats, cleanupDuplicateRepeats]);
 
   return (
     <div className="flex h-screen flex-col" data-skin={skin}>

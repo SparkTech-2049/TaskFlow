@@ -8,13 +8,17 @@ import { useSettingsStore, applySkin, applyFontSize } from '@/lib/stores/setting
 import { useTaskStore } from '@/lib/stores/task-store';
 
 function DataInitializer() {
-  const { fetchFromServer, _hydrated } = useTaskStore();
+  const { fetchFromServer, generateMonthlyRepeats, cleanupDuplicateRepeats, _hydrated } = useTaskStore();
 
   useEffect(() => {
     console.log('[DataInitializer] _hydrated:', _hydrated);
     if (!_hydrated) return;
-    fetchFromServer();
-  }, [_hydrated, fetchFromServer]);
+    fetchFromServer().then(() => {
+      const currentMonth = new Date().toISOString().slice(0, 7);
+      generateMonthlyRepeats(currentMonth);
+      cleanupDuplicateRepeats();
+    });
+  }, [_hydrated, fetchFromServer, generateMonthlyRepeats, cleanupDuplicateRepeats]);
 
   return null;
 }

@@ -1,6 +1,6 @@
 ﻿'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   ChevronLeft,
   ChevronRight,
@@ -9,6 +9,7 @@ import {
   Infinity,
   Archive,
   Clock,
+  Repeat,
 } from 'lucide-react';
 import { useTaskStore } from '@/lib/stores/task-store';
 import { useSettingsStore } from '@/lib/stores/settings-store';
@@ -50,6 +51,8 @@ function TaskRow({ task, categories }: { task: ReturnType<typeof useTaskStore.ge
       <div className="flex-1 min-w-0">
         <div className={cn('text-xs text-text-primary truncate', task.done && 'text-text-muted')}>
           {task.title}
+          {task.monthlyRepeat && <Repeat size={10} className="inline ml-1 text-accent-indigo" />}
+          {task.repeatSourceId && <Repeat size={10} className="inline ml-1 text-accent-indigo/60" />}
         </div>
         <div className="flex items-center gap-2 mt-0.5">
           {task.time && (
@@ -76,10 +79,15 @@ function TaskRow({ task, categories }: { task: ReturnType<typeof useTaskStore.ge
 export default function MobileListPage() {
   const tasks = useTaskStore((s) => s.tasks);
   const updateTask = useTaskStore((s) => s.updateTask);
+  const generateMonthlyRepeats = useTaskStore((s) => s.generateMonthlyRepeats);
   const { showDone, defaultSort } = useSettingsStore();
   const { categories } = useCategories();
   const { label, goPrev, goNext, currentMonthDate, monthKey } = useMonthNav();
   const [filter, setFilter] = useState<Filter>('全部');
+
+  useEffect(() => {
+    generateMonthlyRepeats(monthKey);
+  }, [monthKey, generateMonthlyRepeats]);
 
   /* 分类 + 跨月 */
   const { overdue, longterm, crossPeriod, normalByCat } = useMemo(() => {

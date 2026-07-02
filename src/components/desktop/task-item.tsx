@@ -7,7 +7,7 @@ import { getPriorityColor, getCategoryInfo, getSubCategoryName } from '@/compone
 import { TaskDetailCard } from '@/components/desktop/task-detail-card';
 import type { CategoryItem } from '@/lib/hooks/use-categories';
 import type { Task } from '@/lib/types';
-import { Check, Pencil, Archive, Trash2, Bell } from 'lucide-react';
+import { Check, Pencil, Archive, Trash2, Bell, Repeat } from 'lucide-react';
 
 interface TaskItemProps {
   task: Task;
@@ -96,6 +96,12 @@ export const TaskItem = memo(function TaskItem({
               >
                 {subCatName}
               </span>
+            )}
+            {task.monthlyRepeat && !compact && (
+              <Repeat className="h-3 w-3 shrink-0 text-accent-indigo" />
+            )}
+            {task.repeatSourceId && !task.monthlyRepeat && !compact && (
+              <Repeat className="h-3 w-3 shrink-0 text-accent-indigo/60" />
             )}
           </div>
           {task.time && (

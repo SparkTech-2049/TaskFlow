@@ -35,6 +35,8 @@ interface TaskStore {
   setSelectedDate: (date: string | null) => void;
   syncToServer: () => Promise<{ success: number; failed: number }>;
   fetchFromServer: () => Promise<void>;
+  generateMonthlyRepeats: (month: string) => void;
+  cleanupDuplicateRepeats: () => void;
 }
 
 let persistTimer: ReturnType<typeof setTimeout> | null = null;
@@ -79,6 +81,7 @@ function mapTask(row: Record<string, unknown>): Task {
     longterm: Boolean(row.longterm),
     reminder: Boolean(row.reminder),
     monthlyRepeat: Boolean(row.monthlyRepeat),
+    repeatSourceId: (row.repeatSourceId ?? row.repeat_source_id ?? null) as number | null,
     archivedAt: (row.archivedAt ?? row.archived_at ?? null) as string | null,
     completedAt: (row.completedAt ?? row.completed_at ?? null) as string | null,
     createdAt: String(row.createdAt ?? new Date().toISOString()),
@@ -121,6 +124,7 @@ export const useTaskStore = create<TaskStore>()(
             longterm: normalized.longterm,
             reminder: normalized.reminder,
             monthly_repeat: normalized.monthlyRepeat,
+            repeat_source_id: normalized.repeatSourceId,
           }),
         }).then(async (res) => {
           if (res.ok) {
@@ -177,6 +181,7 @@ export const useTaskStore = create<TaskStore>()(
           if (normalized.longterm !== undefined) payload.longterm = normalized.longterm;
           if (normalized.reminder !== undefined) payload.reminder = normalized.reminder;
           if (normalized.monthlyRepeat !== undefined) payload.monthly_repeat = normalized.monthlyRepeat;
+          if (normalized.repeatSourceId !== undefined) payload.repeat_source_id = normalized.repeatSourceId;
           if (normalized.archivedAt !== undefined) payload.archived_at = normalized.archivedAt;
           if (normalized.completedAt !== undefined) payload.completed_at = normalized.completedAt;
 
@@ -206,6 +211,99 @@ export const useTaskStore = create<TaskStore>()(
       },
       setSelectedMonth: (month) => set({ selectedMonth: month }),
       setSelectedDate: (date) => set({ selectedDate: date }),
+      generateMonthlyRepeats: (month: string) => {
+        const { tasks, addTask } = get();
+        const [year, m] = month.split('-').map(Number);
+        const monthStart = `${year}-${String(m).padStart(2, '0')}-01`;
+        const monthEnd = m === 12
+          ? `${year + 1}-01-01`
+          : `${year}-${String(m + 1).padStart(2, '0')}-01`;
+
+        const templates = tasks.filter(
+          (t) => t.monthlyRepeat && !t.repeatSourceId && !t.archived
+        );
+
+        for (const template of templates) {
+          const existingInstance = tasks.find(
+            (t) =>
+              t.repeatSourceId === template.id &&
+              t.deadline &&
+              t.deadline >= monthStart &&
+              t.deadline < monthEnd
+          );
+          if (existingInstance) continue;
+
+          let newDeadline: string | null = null;
+          if (template.deadline) {
+            const origDay = parseInt(template.deadline.slice(8, 10), 10);
+            const lastDay = new Date(year, m, 0).getDate();
+            const day = Math.min(origDay, lastDay);
+            newDeadline = `${year}-${String(m).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+          }
+
+          const now = new Date().toISOString();
+          addTask({
+            id: Date.now() + Math.random(),
+            parentId: null,
+            cat: template.cat,
+            subCat: template.subCat,
+            title: template.title,
+            meta: template.meta,
+            priorityLevel: template.priorityLevel,
+            deadline: newDeadline,
+            startDate: null,
+            endDate: null,
+            time: template.time,
+            done: false,
+            archived: false,
+            longterm: false,
+            reminder: template.reminder,
+            monthlyRepeat: false,
+            repeatSourceId: template.id,
+            archivedAt: null,
+            completedAt: null,
+            createdAt: now,
+            updatedAt: now,
+          });
+        }
+      },
+      cleanupDuplicateRepeats: () => {
+        const { tasks, deleteTask } = get();
+        const groups: Record<string, Task[]> = {};
+        tasks
+          .filter((t) => t.monthlyRepeat && !t.archived)
+          .forEach((t) => {
+            const key = `${t.title}::${t.cat}::${t.subCat ?? ''}`;
+            if (!groups[key]) groups[key] = [];
+            groups[key].push(t);
+          });
+
+        for (const [, group] of Object.entries(groups)) {
+          if (group.length <= 1) continue;
+          group.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+          for (let i = 1; i < group.length; i++) {
+            deleteTask(group[i].id);
+          }
+        }
+
+        const instanceGroups: Record<string, Task[]> = {};
+        tasks
+          .filter((t) => t.repeatSourceId && !t.archived)
+          .forEach((t) => {
+            const month = t.deadline ? t.deadline.slice(0, 7) : 'none';
+            const key = `${t.repeatSourceId}::${month}`;
+            if (!instanceGroups[key]) instanceGroups[key] = [];
+            instanceGroups[key].push(t);
+          });
+
+        for (const [, group] of Object.entries(instanceGroups)) {
+          if (group.length <= 1) continue;
+          group.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+          for (let i = 1; i < group.length; i++) {
+            deleteTask(group[i].id);
+          }
+        }
+      },
       syncToServer: async () => {
         const { processSyncQueue } = await import('@/lib/indexeddb/sync-queue');
         return processSyncQueue();

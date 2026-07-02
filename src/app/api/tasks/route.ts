@@ -61,6 +61,7 @@ export async function POST(request: Request) {
     longterm: body.longterm || false,
     reminder: body.reminder || false,
     monthlyRepeat: body.monthly_repeat || false,
+    repeatSourceId: body.repeat_source_id ?? null,
   }).returning();
 
   return NextResponse.json(result[0], { status: 201 });

@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   DndContext, DragOverlay, closestCenter, PointerSensor, useSensor, useSensors,
   useDraggable, useDroppable,
   type DragStartEvent, type DragEndEvent,
 } from '@dnd-kit/core';
 import {
-  ChevronLeft, ChevronRight, Circle, CheckCircle2, Infinity, Clock, GripVertical,
+  ChevronLeft, ChevronRight, Circle, CheckCircle2, Infinity, Clock, GripVertical, Repeat,
 } from 'lucide-react';
 import { useTaskStore } from '@/lib/stores/task-store';
 import { useSettingsStore } from '@/lib/stores/settings-store';
@@ -65,6 +65,8 @@ function DraggableTaskRow({ task }: { task: ReturnType<typeof useTaskStore.getSt
       </button>
       <span className={cn('text-[10px] text-text-primary truncate flex-1', task.done && 'text-text-muted')}>
         {task.title}
+        {task.monthlyRepeat && <Repeat size={8} className="inline ml-0.5 text-accent-indigo" />}
+        {task.repeatSourceId && <Repeat size={8} className="inline ml-0.5 text-accent-indigo/60" />}
       </span>
       {task.time && (
         <span className="flex items-center gap-0.5 text-[8px] text-text-muted shrink-0">
@@ -95,10 +97,14 @@ function DroppableQuadrant({ quadrant, children }: { quadrant: typeof QUADRANTS[
 }
 
 export default function MobileQuadrantPage() {
-  const { tasks, updateTask } = useTaskStore();
+  const { tasks, updateTask, generateMonthlyRepeats } = useTaskStore();
   const { showDone } = useSettingsStore();
   const { label, goPrev, goNext, currentMonthDate, monthKey } = useMonthNav();
   const [activeId, setActiveId] = useState<string | null>(null);
+
+  useEffect(() => {
+    generateMonthlyRepeats(monthKey);
+  }, [monthKey, generateMonthlyRepeats]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })

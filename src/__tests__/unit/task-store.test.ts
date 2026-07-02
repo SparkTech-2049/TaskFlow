@@ -4,7 +4,6 @@ import type { Task } from '@/lib/types';
 
 const mockTask: Task = {
   id: 1,
-  userId: 1,
   cat: 'project',
   subCat: null,
   parentId: null,
@@ -20,7 +19,9 @@ const mockTask: Task = {
   longterm: false,
   reminder: true,
   monthlyRepeat: false,
+  repeatSourceId: null,
   archivedAt: null,
+  completedAt: null,
   createdAt: '2026-06-01T00:00:00Z',
   updatedAt: '2026-06-01T00:00:00Z',
 };

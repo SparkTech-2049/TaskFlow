@@ -15,6 +15,7 @@
   longterm: boolean;
   reminder: boolean;
   monthlyRepeat: boolean;
+  repeatSourceId: number | null;
   archivedAt: string | null;
   completedAt: string | null;
   createdAt: string;

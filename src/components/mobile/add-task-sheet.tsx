@@ -107,6 +107,7 @@ export function AddTaskSheet({ open, onClose }: AddTaskSheetProps) {
       longterm: false,
       reminder,
       monthlyRepeat,
+      repeatSourceId: null,
       archivedAt: null,
       completedAt: null,
       createdAt: now,
@@ -276,25 +277,30 @@ export function AddTaskSheet({ open, onClose }: AddTaskSheetProps) {
               </div>
 
               {/* 6. 按月重复 */}
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-2 text-xs text-text-secondary">
-                  <Repeat size={14} className="text-text-muted" />
-                  按月重复
-                </span>
-                <button
-                  onClick={() => setMonthlyRepeat(!monthlyRepeat)}
-                  className={cn(
-                    'relative h-6 w-11 rounded-full transition-colors',
-                    monthlyRepeat ? 'bg-accent-blue' : 'bg-bg-elevated'
-                  )}
-                >
-                  <span
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-2 text-xs text-text-secondary">
+                    <Repeat size={14} className="text-text-muted" />
+                    按月重复
+                  </span>
+                  <button
+                    onClick={() => setMonthlyRepeat(!monthlyRepeat)}
                     className={cn(
-                      'absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform',
-                      monthlyRepeat ? 'translate-x-[22px]' : 'translate-x-0.5'
+                      'relative h-6 w-11 rounded-full transition-colors',
+                      monthlyRepeat ? 'bg-accent-blue' : 'bg-bg-elevated'
                     )}
-                  />
-                </button>
+                  >
+                    <span
+                      className={cn(
+                        'absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform',
+                        monthlyRepeat ? 'translate-x-[22px]' : 'translate-x-0.5'
+                      )}
+                    />
+                  </button>
+                </div>
+                {monthlyRepeat && (
+                  <p className="text-[10px] text-text-muted pl-[22px]">每月自动创建新任务，关闭后下月不再重复</p>
+                )}
               </div>
 
               {/* 7. 到期提醒 */}

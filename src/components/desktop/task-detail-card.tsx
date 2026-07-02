@@ -75,7 +75,13 @@ export function TaskDetailCard({ task, categories }: TaskDetailCardProps) {
           {task.monthlyRepeat && (
             <div className="flex items-center gap-1">
               <Repeat className="h-3 w-3 text-accent-indigo" />
-              <span className="text-[10px] text-accent-indigo">按月</span>
+              <span className="text-[10px] text-accent-indigo">按月重复</span>
+            </div>
+          )}
+          {task.repeatSourceId && !task.monthlyRepeat && (
+            <div className="flex items-center gap-1">
+              <Repeat className="h-3 w-3 text-accent-indigo/60" />
+              <span className="text-[10px] text-accent-indigo/60">重复实例</span>
             </div>
           )}
           {task.longterm && (

@@ -80,6 +80,7 @@ export function AddTaskModal({ open, onClose, onAdd, editTask, onEdit }: AddTask
         longterm,
         reminder,
         monthlyRepeat,
+        repeatSourceId: null,
       });
     } else {
       onAdd({
@@ -97,6 +98,7 @@ export function AddTaskModal({ open, onClose, onAdd, editTask, onEdit }: AddTask
         longterm,
         reminder,
         monthlyRepeat,
+        repeatSourceId: null,
       });
     }
     resetForm();
@@ -243,23 +245,28 @@ export function AddTaskModal({ open, onClose, onAdd, editTask, onEdit }: AddTask
                 </div>
 
                 {/* 6. 按月重复 */}
-                <div className="flex items-center justify-between rounded-lg border border-border-micro bg-bg-elevated px-2.5 py-2">
-                  <div className="flex items-center gap-1.5 text-[12px] text-text-secondary">
-                    <Repeat className="h-3.5 w-3.5" />
-                    按月重复
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between rounded-lg border border-border-micro bg-bg-elevated px-2.5 py-2">
+                    <div className="flex items-center gap-1.5 text-[12px] text-text-secondary">
+                      <Repeat className="h-3.5 w-3.5" />
+                      按月重复
+                    </div>
+                    <button
+                      onClick={() => setMonthlyRepeat(!monthlyRepeat)}
+                      className={cn(
+                        'h-4.5 w-8 rounded-full transition-colors',
+                        monthlyRepeat ? 'bg-accent-blue' : 'bg-border-micro'
+                      )}
+                    >
+                      <div className={cn(
+                        'h-3.5 w-3.5 rounded-full bg-white shadow-sm transition-transform',
+                        monthlyRepeat ? 'translate-x-[16px]' : 'translate-x-[2px]'
+                      )} />
+                    </button>
                   </div>
-                  <button
-                    onClick={() => setMonthlyRepeat(!monthlyRepeat)}
-                    className={cn(
-                      'h-4.5 w-8 rounded-full transition-colors',
-                      monthlyRepeat ? 'bg-accent-blue' : 'bg-border-micro'
-                    )}
-                  >
-                    <div className={cn(
-                      'h-3.5 w-3.5 rounded-full bg-white shadow-sm transition-transform',
-                      monthlyRepeat ? 'translate-x-[16px]' : 'translate-x-[2px]'
-                    )} />
-                  </button>
+                  {monthlyRepeat && (
+                    <p className="text-[10px] text-text-muted pl-1">每月自动创建新任务，关闭后下月不再重复</p>
+                  )}
                 </div>
 
                 {/* 7. 到期提醒 */}

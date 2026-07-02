@@ -18,6 +18,7 @@ export const createTaskSchema = z.object({
   longterm: z.boolean().optional(),
   reminder: z.boolean().optional(),
   monthly_repeat: z.boolean().optional(),
+  repeat_source_id: z.number().nullable().optional(),
 });
 
 export type LoginInput = z.infer<typeof loginSchema>;

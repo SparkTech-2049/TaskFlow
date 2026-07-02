@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { ChevronLeft, ChevronRight, Plus, Clock, Flag, CheckCircle2 } from 'lucide-react';
+import { useState, useMemo, useEffect } from 'react';
+import { ChevronLeft, ChevronRight, Plus, Clock, Flag, CheckCircle2, Repeat } from 'lucide-react';
 import { useCalendar } from '@/lib/hooks/use-calendar';
 import { useTaskStore } from '@/lib/stores/task-store';
 import { useSettingsStore } from '@/lib/stores/settings-store';
@@ -19,10 +19,15 @@ export default function MobileCalendarPage() {
     selectDate,
   } = useCalendar();
 
-  const { tasks, updateTask, deleteTask } = useTaskStore();
+  const { tasks, updateTask, deleteTask, generateMonthlyRepeats } = useTaskStore();
   const { showDone } = useSettingsStore();
   const [addSheetOpen, setAddSheetOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'month' | 'week'>('month');
+
+  useEffect(() => {
+    const month = new Date().toISOString().slice(0, 7);
+    generateMonthlyRepeats(month);
+  }, [generateMonthlyRepeats]);
 
   const activeTasks = useMemo(() => {
     const base = tasks.filter((t) => !t.archived);
@@ -282,6 +287,8 @@ export default function MobileCalendarPage() {
                           )}
                         >
                           {task.title}
+                          {task.monthlyRepeat && <Repeat size={10} className="inline ml-1 text-accent-indigo" />}
+                          {task.repeatSourceId && <Repeat size={10} className="inline ml-1 text-accent-indigo/60" />}
                         </span>
                         {task.time && (
                           <span className="flex items-center gap-0.5 text-[10px] text-text-muted shrink-0">
